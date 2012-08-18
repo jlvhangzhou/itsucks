@@ -5,14 +5,50 @@
 
 public class GetMainBody {
 	
-	static public int blockThi
+	public static final int minStart = 10;
+	public static final int blockThickness = 3;
+	public static final int minThickness = 3;
+	public static final int minChars = 80;
 	
-	static public String getResult(String text) {
+	public static String getResult(String text) {
+		
 		String[] lines = text.split("\n");
 		int totalLines = lines.length;
-		int 
-		String result = null;
+		int[] lineLength = new int[totalLines];
+		for (int i = 0; i < totalLines; i++)
+			lineLength[i] = lines[i].length();
+
+		int[] blockLength = new int[totalLines - blockThickness + 1];
 		
+		for (int i = 0; i < blockLength.length; i++) {
+			int sum = 0;
+			for (int j = 0; j < blockThickness; j++) {
+				sum += lineLength[i + j];
+			}
+			blockLength[i] = sum;
+			System.out.println(sum);
+		}
+
+		int start = minStart, end = totalLines;
+		for (int i = start; i < blockLength.length - 1; i++) {
+			if (blockLength[i] < minChars) continue;
+			if (blockLength[i + 1] == 0) continue;
+			start = i;
+			for (int j = i; j < totalLines; j++)
+				if (blockLength[j] == 0) {
+					end = j;
+					break;
+				}
+			break;
+		}
+		
+		System.out.println("start: " + start);
+		System.out.println("end: " + end);
+		
+		String result = lines[start] + "\n";
+		for (int i = start + 1; i < end; i++) {
+			result += lines[i] + "\n";
+		}
 		return result;
 	}
 

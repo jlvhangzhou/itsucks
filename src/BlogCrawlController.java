@@ -65,7 +65,7 @@ public class BlogCrawlController {
 		 * You can set the maximum number of pages to crawl. The default value
 		 * is -1 for unlimited number of pages
 		 */
-		config.setMaxPagesToFetch(-1);
+		config.setMaxPagesToFetch(1);
 
 		/*
 		 * Do you need to set a proxy? If so, you can use:
@@ -99,11 +99,11 @@ public class BlogCrawlController {
 		 * which are found in these pages
 		 */
 
-//		String site = new String("http://blog.yufeng.info").toLowerCase();
-//		String seed = new String("http://blog.yufeng.info/archives/791");
+		String site = new String("http://blog.yufeng.info").toLowerCase();
+		String seed = new String("http://blog.yufeng.info/archives/2293");
 		
 //		String site = new String("http://www.cppblog.com/vczh/").toLowerCase();
-//		String seed = new String("http://www.cppblog.com/vczh/archive/2008/05/03/48702.html");
+//		String seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
 		
 //		String site = new String("http://www.guwendong.com/").toLowerCase();
 //		String seed = new String("http://www.guwendong.com/post/2012/xlvector_recsys_book.html");
@@ -114,8 +114,8 @@ public class BlogCrawlController {
 //		String site = new String("http://www.searchtb.com").toLowerCase();
 //		String seed = new String("http://www.searchtb.com/2012/08/zeromq-primer.html");
 		
-		String site = new String("http://www.yankay.com").toLowerCase();
-		String seed = new String("http://www.yankay.com/java-fast-byte-comparison/");
+//		String site = new String("http://www.yankay.com").toLowerCase();
+//		String seed = new String("http://www.yankay.com/java-fast-byte-comparison/");
 		
 		controller.addSeed(seed);
 
@@ -126,9 +126,9 @@ public class BlogCrawlController {
 		JedisPool pool = new JedisPool("localhost");
 //		Jedis jedis = pool.getResource();
 		
-		BasicCrawler.site = site;
-		BasicCrawler.pool = pool;
-		controller.start(BasicCrawler.class, numberOfCrawlers);
+		BlogCrawler.site = site;
+		BlogCrawler.pool = pool;
+		controller.start(BlogCrawler.class, numberOfCrawlers);
 		
 		pool.destroy();
 	}

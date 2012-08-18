@@ -121,7 +121,12 @@ public class BlogCrawler extends WebCrawler {
 			List<WebURL> links = htmlParseData.getOutgoingUrls();
 			
 			int index = commentHead(html);
-			String text = html.substring(0, index).replaceAll("<[^>]*>", "");
+			int linesBeforeComment = html.substring(0, index).split("\n").length;
+			String[] lines = htmlParseData.getText().split("\n");
+			String text = lines[0] + "\n";
+			for (int i = 1; i < linesBeforeComment; i++)
+				text += lines[i] + "\n";
+//			String text = html.substring(0, index).replaceAll("<.*>", "").replaceAll("<.*>", "").replaceAll("<.*>", "");
 			double numberOfTitles = html.split("title").length-1;
 			double numberOfLines = html.split("\n").length-1;
 			double numberOfYears = (text.split("\\D20\\d{2}\\D").length-1);
@@ -133,15 +138,18 @@ public class BlogCrawler extends WebCrawler {
 			
 			System.out.println("Docid: " + docid);
 			System.out.println("URL: " + url);
-			System.out.println("CRC32: " + crc32value);
-			Jedis jedis = pool.getResource();
-			if (!jedis.sismember("crc32", crc32value.toString()))
-				jedis.sadd("crc32", crc32value.toString());
-			pool.returnResource(jedis);
+//			System.out.println("CRC32: " + crc32value);
+//			Jedis jedis = pool.getResource();
+//			if (!jedis.sismember("crc32", crc32value.toString()))
+//				jedis.sadd("crc32", crc32value.toString());
+//			pool.returnResource(jedis);
 			
-//			System.out.println("Year occurs " + numberOfYears);
-//			System.out.println("Title rate: " + rate);
-//			System.out.println(score);
+			System.out.println("Year occurs " + numberOfYears);
+			System.out.println("Title rate: " + rate);
+			System.out.println(score);
+//			System.out.println(html.substring(0, index));
+			System.out.println(htmlParseData.getText());
+			System.out.println(GetMainBody.getResult(htmlParseData.getText()));
 			System.out.println("=============");
 			
 //			System.out.println(score.toString() + ", ");
