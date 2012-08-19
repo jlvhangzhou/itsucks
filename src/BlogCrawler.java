@@ -122,7 +122,7 @@ public class BlogCrawler extends WebCrawler {
 
 			System.out.println("Docid: " + docid);
 			System.out.println("URL: " + url);
-			System.out.println(PostScore.getResult(html)); 
+			System.out.println(Util.isPost(html)); 
 /*	
 			System.out.println(htmlParseData.getHtml().replaceAll("<script[^>]*>[^<]*</script>", "").replaceAll("<[^<>]*>", ""));
 

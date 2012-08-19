@@ -100,24 +100,52 @@ public class BlogCrawlController {
 		 */
 		System.out.println("Test: 02"); 
 		
-		String site = new String("http://blog.yufeng.info").toLowerCase();
-		String seed = new String("http://blog.yufeng.info/archives/category/erlang");
+		String site = "", seed = "";
 		
-//		String site = new String("http://www.cppblog.com/vczh/").toLowerCase();
-//		String seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
-//		String seed = new String("http://www.cppblog.com/vczh/category/7314.html");
-		
-//		String site = new String("http://www.guwendong.com/").toLowerCase();
-//		String seed = new String("http://www.guwendong.com/post/2012/xlvector_recsys_book.html");
-		
-//		String site = new String("http://dinglin.iteye.com/").toLowerCase();
-//		String seed = new String("http://dinglin.iteye.com/?from=yufeng");
-		
-//		String site = new String("http://www.searchtb.com").toLowerCase();
-//		String seed = new String("http://www.searchtb.com/2012/08/");
-		
-//		String site = new String("http://www.yankay.com").toLowerCase();
-//		String seed = new String("http://www.yankay.com/java-fast-byte-comparison/");
+		switch (8) {
+			case 1: {
+				site = new String("http://blog.yufeng.info").toLowerCase();
+//				seed = new String("http://blog.yufeng.info/archives/2234");
+				seed = new String("http://blog.yufeng.info/archives/category/erlang");
+				break;
+			}
+			case 2: {
+				site = new String("http://www.cppblog.com/vczh/").toLowerCase();
+				seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
+//				seed = new String("http://www.cppblog.com/vczh/category/7314.html");
+				break;
+			}
+			case 3: {
+				site = new String("http://www.guwendong.com/").toLowerCase();
+				seed = new String("http://www.guwendong.com/post/2012/xlvector_recsys_book.html");
+				break;
+			}
+			case 4: {
+				site = new String("http://dinglin.iteye.com/").toLowerCase();
+				seed = new String("http://dinglin.iteye.com/?from=yufeng");
+				break;
+			}
+			case 5: {
+				site = new String("http://www.searchtb.com").toLowerCase();
+//				seed = new String("http://www.searchtb.com/2012/08/");
+				seed = new String("http://www.searchtb.com/2012/08/zeromq-primer.html");
+				break;
+			}
+			case 6: {
+				site = new String("http://www.yankay.com").toLowerCase();
+				seed = new String("http://www.yankay.com/java-fast-byte-comparison/");
+				break;
+			}
+			case 7: {
+				site = new String("http://verypig.com/").toLowerCase();
+				seed = new String("http://verypig.com/?p=393");
+				break;
+			}
+			case 8: {
+				site = new String("http://www.ifanr.com/").toLowerCase();
+				seed = new String("http://www.ifanr.com/category/special/opinion");
+			}
+		}
 		
 		controller.addSeed(seed);
 
