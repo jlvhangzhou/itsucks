@@ -116,8 +116,16 @@ public class BlogCrawler extends WebCrawler {
 		String parentUrl = page.getWebURL().getParentUrl();
 
 		if (page.getParseData() instanceof HtmlParseData) {
+			
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String html = htmlParseData.getHtml();
+
+			System.out.println("Docid: " + docid);
+			System.out.println("URL: " + url);
+			System.out.println(PostScore.getResult(html)); 
+/*	
+			System.out.println(htmlParseData.getHtml().replaceAll("<script[^>]*>[^<]*</script>", "").replaceAll("<[^<>]*>", ""));
+
 			List<WebURL> links = htmlParseData.getOutgoingUrls();
 			
 			int index = commentHead(html);
@@ -136,8 +144,6 @@ public class BlogCrawler extends WebCrawler {
 			crc32.update(htmlParseData.getTitle().getBytes());
 			Long crc32value = crc32.getValue(); 
 			
-			System.out.println("Docid: " + docid);
-			System.out.println("URL: " + url);
 //			System.out.println("CRC32: " + crc32value);
 //			Jedis jedis = pool.getResource();
 //			if (!jedis.sismember("crc32", crc32value.toString()))
@@ -150,6 +156,7 @@ public class BlogCrawler extends WebCrawler {
 //			System.out.println(html.substring(0, index));
 			System.out.println(htmlParseData.getText());
 			System.out.println(GetMainBody.getResult(htmlParseData.getText()));
+			*/
 			System.out.println("=============");
 			
 //			System.out.println(score.toString() + ", ");

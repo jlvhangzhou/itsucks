@@ -98,21 +98,23 @@ public class BlogCrawlController {
 		 * URLs that are fetched and then the crawler starts following links
 		 * which are found in these pages
 		 */
-
+		System.out.println("Test: 02"); 
+		
 		String site = new String("http://blog.yufeng.info").toLowerCase();
-		String seed = new String("http://blog.yufeng.info/archives/2293");
+		String seed = new String("http://blog.yufeng.info/archives/category/erlang");
 		
 //		String site = new String("http://www.cppblog.com/vczh/").toLowerCase();
 //		String seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
+//		String seed = new String("http://www.cppblog.com/vczh/category/7314.html");
 		
 //		String site = new String("http://www.guwendong.com/").toLowerCase();
 //		String seed = new String("http://www.guwendong.com/post/2012/xlvector_recsys_book.html");
 		
 //		String site = new String("http://dinglin.iteye.com/").toLowerCase();
-//		String seed = new String("http://dinglin.iteye.com/blog/1564953");
+//		String seed = new String("http://dinglin.iteye.com/?from=yufeng");
 		
 //		String site = new String("http://www.searchtb.com").toLowerCase();
-//		String seed = new String("http://www.searchtb.com/2012/08/zeromq-primer.html");
+//		String seed = new String("http://www.searchtb.com/2012/08/");
 		
 //		String site = new String("http://www.yankay.com").toLowerCase();
 //		String seed = new String("http://www.yankay.com/java-fast-byte-comparison/");

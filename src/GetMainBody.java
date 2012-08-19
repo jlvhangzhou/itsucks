@@ -7,8 +7,9 @@ public class GetMainBody {
 	
 	public static final int minStart = 10;
 	public static final int blockThickness = 3;
-	public static final int minThickness = 3;
 	public static final int minChars = 80;
+	
+	private static final boolean beingTested = false;
 	
 	public static String getResult(String text) {
 		
@@ -26,7 +27,8 @@ public class GetMainBody {
 				sum += lineLength[i + j];
 			}
 			blockLength[i] = sum;
-			System.out.println(sum);
+			
+			if (beingTested) System.out.println(sum);
 		}
 
 		int start = minStart, end = totalLines;
@@ -41,9 +43,9 @@ public class GetMainBody {
 				}
 			break;
 		}
-		
-		System.out.println("start: " + start);
-		System.out.println("end: " + end);
+
+		if (beingTested) System.out.println("start: " + start);
+		if (beingTested) System.out.println("end: " + end);
 		
 		String result = lines[start] + "\n";
 		for (int i = start + 1; i < end; i++) {
