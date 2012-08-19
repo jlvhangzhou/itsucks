@@ -98,7 +98,7 @@ public class BlogCrawlController {
 		 * URLs that are fetched and then the crawler starts following links
 		 * which are found in these pages
 		 */
-		System.out.println("Test: 02"); 
+		System.out.println("Test: 05"); 
 		
 		String site = "", seed = "";
 		
@@ -111,8 +111,8 @@ public class BlogCrawlController {
 			}
 			case 2: {
 				site = new String("http://www.cppblog.com/vczh/").toLowerCase();
-				seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
-//				seed = new String("http://www.cppblog.com/vczh/category/7314.html");
+//				seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
+				seed = new String("http://www.cppblog.com/vczh/category/6885.html");
 				break;
 			}
 			case 3: {
@@ -142,8 +142,8 @@ public class BlogCrawlController {
 				break;
 			}
 			case 8: {
-				site = new String("http://www.ifanr.com/").toLowerCase();
-				seed = new String("http://www.ifanr.com/category/special/opinion");
+				site = new String("http://www.china-pub.com/").toLowerCase();
+				seed = new String("http://www.china-pub.com/");
 			}
 		}
 		

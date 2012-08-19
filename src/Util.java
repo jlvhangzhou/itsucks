@@ -61,7 +61,6 @@ public class Util {
 			
 		int bodyIndex = Math.max(origHtml.indexOf("<body>"), 0);
 		String body = origHtml.substring(bodyIndex);
-		int bodySize = body.length();
 		String[] lines = body.split("\n");
 		int totalLines = lines.length;
 		int[] numberOfComments = new int[totalLines];
@@ -71,6 +70,9 @@ public class Util {
 		
 		numberOfComments[0] = sumOfComments[0] = 0;
 		for (int i = 1; i <= lastLine; i++) {
+			/*
+			 *  numberOfComment[i]等于0或者1
+			 */
 			numberOfComments[i] = Math.min(1, lines[i].split("[Cc]omment").length - 1);
 			sumOfComments[i] = sumOfComments[i-1] + numberOfComments[i];
 			if (numberOfComments[i] == 0) continue;
@@ -80,22 +82,22 @@ public class Util {
 			lastComment = i;
 		}
 
-		System.out.println("first comment: " + firstComment);
-		System.out.println("last comment:" + lastComment);
-		System.out.println("last line:" + lastLine);
-
 		int beginOfCommentBlock = lastLine + 1;
 		int endOfCommentBlock = lastLine + 1;
 		
 		if (firstComment != -1) {
-			
-			double minProduct = (double)(lastComment - firstComment + 1) * (lastComment - firstComment + 1)  
-					/ numberOfCommentsWithin(firstComment, lastComment, sumOfComments) 
-					/ firstComment / (lastLine - lastComment);
+			/*
+			 *  假设 body = content + LineX + comment + LineY + footer
+			 *  行数分别为 Rl, Sl, Tl
+			 *  带comment的行数为 Rc, Sc, Tc
+			 *  枚举LineX和LineY使 Sl * Rc * Tc / Sc^2 / Rl / Tl 最小
+			 */
+
+			double minProduct = Double.MAX_VALUE;
 			
 			for (int i = firstComment; i <= lastComment; i++) {
 				for (int j = i; j <= lastComment; j++) {
-					double product = Math.sqrt((double)(j - i + 1) / numberOfCommentsWithin(i, j, sumOfComments))
+					double product = (double)(j - i + 1) / Math.pow(numberOfCommentsWithin(i, j, sumOfComments), 2)
 							* (numberOfCommentsWithin(1, i-1, sumOfComments) + 1)
 							* (numberOfCommentsWithin(j+1, lastLine, sumOfComments) + 1)
 							/ i / (lastLine - j);
@@ -109,17 +111,25 @@ public class Util {
 			}
 		}
 		
-		System.out.println("begin comment blog: " + beginOfCommentBlock);
-		System.out.println("end comment blog: " + endOfCommentBlock);
+//		System.out.println("begin comment blog: " + beginOfCommentBlock);				// useless code
+//		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
+//		System.out.println("total lines: " + totalLines);								// useless code
 		
 		for (int i = beginOfCommentBlock; i < endOfCommentBlock; i++)
-			lines[i] = removeYears(lines[i]);
+			lines[i] = removeYears(lines[i]).replace("[Tt]itle", "");
 		
 		String main = lines[0] + "\n";
-		for (int i = 1; i <= lastLine; i++)
+		int numberOfTitles = 0;
+		for (int i = 1; i <= lastLine; i++) {
 			main += lines[i] + "\n";
+			if (i < lastLine * 2 / 3)
+				numberOfTitles += Math.min(1, lines[i].split("[Tt]itle").length - 1);
+		}
 		
 		String mainText = removeEmptyLines(fliterTag(main));
+		/*
+		 *  注意lines[]不再是body的内容
+		 */
 		lines = mainText.split("\n");
 		int[] numberOfYears = new int[lines.length];
 		for (int i = 0; i < lines.length; i++) {
@@ -127,7 +137,11 @@ public class Util {
 		}
 		
 		int countYears = 0;
-		for (int i = 2; i <= lines.length - 3; i++) {
+		/*
+		 *  去除可能的年份列表
+		 *  防止页脚的版权年号干扰, 只取 9/10 的内容
+		 */
+		for (int i = 2; i <= lines.length * 9 / 10; i++) {
 			if (numberOfYears[i] == 0) continue;
 			if (numberOfYears[i-2] + numberOfYears[i-1] + numberOfYears[i] >= 3) continue;
 			if (numberOfYears[i+1] + numberOfYears[i-1] + numberOfYears[i] >= 3) continue;
@@ -136,13 +150,13 @@ public class Util {
 		}
 		countYears = Math.max(1, countYears);
 		
-		double titleRate = (double)(body.substring(0, bodySize/5*4).split("[Tt]itle").length - 1) / totalLines;
-		System.out.println(origHtml.split("[Tt]itle").length - 1);
+		double titleRate = (double)numberOfTitles / totalLines;
+			
+//		System.out.println("title number: " + numberOfTitles);
+//		System.out.println("title rate: " + titleRate);					// useless code
+//		System.out.println("year occurs: " + countYears);					// useless code
 		
-		System.out.println("title rate: " + titleRate);					// useless code
-		System.out.println("year occurs: " + countYears);					// useless code
-		
-		return titleRate * titleRate * countYears * 10;
+		return titleRate * countYears * 10;
 	}
 	
 	/**
@@ -213,5 +227,10 @@ public class Util {
 		String result = text.replaceAll("[ \t]+\n", "\n").replaceAll("\n+", "\n");
 		return result;
 	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  计算list页面和post页面的临界值
+	 */
 	
 }

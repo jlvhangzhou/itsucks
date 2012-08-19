@@ -25,6 +25,7 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -84,7 +85,10 @@ public class BlogCrawler extends WebCrawler {
 		String path = href.substring(site.length());
 		return href.startsWith(site) && !path.contains("#") && !path.contains("&")// && !path.contains("?")
 				&& (!path.contains(".") || path.endsWith(".html") || path.endsWith(".htm")) 
-				&& !path.endsWith("/feed") && !path.endsWith("/feed/");
+				&& !path.endsWith("/feed") && !path.endsWith("/feed/")
+				&& !path.endsWith("/rss") && !path.endsWith("/rss/")
+				&& path.split("/tag/").length == 1;
+				
 	}
 	
 	/**
@@ -119,10 +123,13 @@ public class BlogCrawler extends WebCrawler {
 			
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String html = htmlParseData.getHtml();
-
-			System.out.println("Docid: " + docid);
-			System.out.println("URL: " + url);
-			System.out.println(Util.isPost(html)); 
+			Jedis jedis = pool.getResource();
+			jedis.set("html", html);
+			pool.returnResource(jedis);
+			
+//			System.out.println("Docid: " + docid);
+//			System.out.println("URL: " + url);
+			System.out.println(Util.isPost(html) + ", "); 
 /*	
 			System.out.println(htmlParseData.getHtml().replaceAll("<script[^>]*>[^<]*</script>", "").replaceAll("<[^<>]*>", ""));
 
@@ -157,7 +164,7 @@ public class BlogCrawler extends WebCrawler {
 			System.out.println(htmlParseData.getText());
 			System.out.println(GetMainBody.getResult(htmlParseData.getText()));
 			*/
-			System.out.println("=============");
+//			System.out.println("=============\n");
 			
 //			System.out.println(score.toString() + ", ");
 		} 
