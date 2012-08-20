@@ -15,13 +15,6 @@
  * limitations under the License.
  */
 
-/**
- *  @author Wu Hualiang <wizawu@gmail.com>
- *  爬取购书网 www.china-pub.com 计算机分类的网页
- */
-
-import java.util.Random;
-import java.util.ResourceBundle.Control;
 import java.util.Set;
 
 import redis.clients.jedis.Jedis;
@@ -34,6 +27,10 @@ import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
+/**
+ *  @author Wu Hualiang <wizawu@gmail.com>
+ *  爬取购书网 www.china-pub.com 计算机分类的网页
+ */
 
 public class ChinapubCrawlController {
 

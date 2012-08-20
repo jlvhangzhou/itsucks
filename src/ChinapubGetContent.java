@@ -1,15 +1,11 @@
-/**
- *  @author Wu Hualiang <wizawu@gmail.com>
- *  将从 www.china-pub.com 爬取到的网页中的图书目录提取出来保存到文本文件中
- */
 
 import java.io.*;
 import java.nio.file.Files;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader;
-
-import org.apache.tika.parser.html.HtmlParser;
-import org.w3c.dom.html.HTMLDocument;
+/**
+ *  @author Wu Hualiang <wizawu@gmail.com>
+ *  将从 www.china-pub.com 爬取到的网页中的图书目录提取出来保存到文本文件中
+ */
 
 public class ChinapubGetContent {
 	

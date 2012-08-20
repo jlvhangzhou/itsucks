@@ -15,11 +15,6 @@
  * limitations under the License.
  */
 
-/**
- *  @author Wu Hualiang <wizawu@gmail.com>
- *  爬取指定blog站内的所有post页面
- */
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -29,132 +24,32 @@ import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
+/**
+ *  @author Wu Hualiang <wizawu@gmail.com>
+ *  爬取指定blog站内的所有post页面
+ */
+
 public class BlogCrawlController {
 
 	public static void main(String[] args) throws Exception {
-
-		/*
-		 * crawlStorageFolder is a folder where intermediate crawl data is
-		 * stored.
-		 */
-		String crawlStorageFolder = "/home/wiza/crawler4j";
-
-		/*
-		 * numberOfCrawlers shows the number of concurrent threads that should
-		 * be initiated for crawling.
-		 */
-		int numberOfCrawlers = 8;
-
-		CrawlConfig config = new CrawlConfig();
-
-		config.setCrawlStorageFolder(crawlStorageFolder);
-
-		/*
-		 * Be polite: Make sure that we don't send more than 1 request per
-		 * second (1000 milliseconds between requests).
-		 */
-		config.setPolitenessDelay(100);
-
-		/*
-		 * You can set the maximum crawl depth here. The default value is -1 for
-		 * unlimited depth
-		 */
-		config.setMaxDepthOfCrawling(-1);
-
-		/*
-		 * You can set the maximum number of pages to crawl. The default value
-		 * is -1 for unlimited number of pages
-		 */
-		config.setMaxPagesToFetch(-1);
-
-		/*
-		 * Do you need to set a proxy? If so, you can use:
-		 * config.setProxyHost("proxyserver.example.com");
-		 * config.setProxyPort(8080);
-		 * 
-		 * If your proxy also needs authentication:
-		 * config.setProxyUsername(username); config.getProxyPassword(password);
-		 */
-
-		/*
-		 * This config parameter can be used to set your crawl to be resumable
-		 * (meaning that you can resume the crawl from a previously
-		 * interrupted/crashed crawl). Note: if you enable resuming feature and
-		 * want to start a fresh crawl, you need to delete the contents of
-		 * rootFolder manually.
-		 */
-		config.setResumableCrawling(false);
-
-		/*
-		 * Instantiate the controller for this crawl.
-		 */
+		
+		int maxPagesToFetch = 2000;
+		CrawlConfig config = Util.getGlobalCrawlCongig(maxPagesToFetch);
+		
 		PageFetcher pageFetcher = new PageFetcher(config);
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 		CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
-
-		/*
-		 * For each crawl, you need to add some seed urls. These are the first
-		 * URLs that are fetched and then the crawler starts following links
-		 * which are found in these pages
-		 */
-		System.out.println("Test: 05"); 
 		
-		String site = "", seed = "";
-		
-		switch (1) {
-			case 1: {
-				site = new String("http://blog.yufeng.info").toLowerCase();
-//				seed = new String("http://blog.yufeng.info/archives/2234");
-				seed = new String("http://blog.yufeng.info/archives/category/erlang");
-				break;
-			}
-			case 2: {
-				site = new String("http://www.cppblog.com/vczh/").toLowerCase();
-//				seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
-				seed = new String("http://www.cppblog.com/vczh/category/6885.html");
-				break;
-			}
-			case 3: {
-				site = new String("http://www.guwendong.com/").toLowerCase();
-				seed = new String("http://www.guwendong.com/post/2012/xlvector_recsys_book.html");
-				break;
-			}
-			case 4: {
-				site = new String("http://dinglin.iteye.com/").toLowerCase();
-				seed = new String("http://dinglin.iteye.com/?from=yufeng");
-				break;
-			}
-			case 5: {
-				site = new String("http://www.searchtb.com").toLowerCase();
-//				seed = new String("http://www.searchtb.com/2012/08/");
-				seed = new String("http://www.searchtb.com/2012/08/zeromq-primer.html");
-				break;
-			}
-			case 6: {
-				site = new String("http://www.yankay.com").toLowerCase();
-				seed = new String("http://www.yankay.com/java-fast-byte-comparison/");
-				break;
-			}
-			case 7: {
-				site = new String("http://verypig.com/").toLowerCase();
-				seed = new String("http://verypig.com/?p=393");
-				break;
-			}
-		}
-		
-		controller.addSeed(seed);
-
-		/*
-		 * Start the crawl. This is a blocking operation, meaning that your code
-		 * will reach the line after this only when crawling is finished.
-		 */
 		JedisPool pool = new JedisPool("localhost");
-//		Jedis jedis = pool.getResource();
-		
-		BlogCrawler.site = site;
 		BlogCrawler.pool = pool;
-		controller.start(BlogCrawler.class, numberOfCrawlers);
+		
+		String site = Util.URLCrawlFormat(args[0]);
+		String seed = Util.URLCrawlFormat(args[1]);
+		BlogCrawler.site = site;
+		controller.addSeed(seed);
+		
+		controller.start(BlogCrawler.class, Util.numberOfCrawlers);
 		
 		pool.destroy();
 	}

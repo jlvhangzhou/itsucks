@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-/**
- *  @author Wu Hualiang <wizawu@gmail.com>
- *  爬取购书网 www.china-pub.com 计算机分类的网页
- */
-
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 import java.io.*;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+
+/**
+ *  @author Wu Hualiang <wizawu@gmail.com>
+ *  爬取购书网 www.china-pub.com 计算机分类的网页
+ */
 
 public class ChinapubCrawler extends WebCrawler {
 	

@@ -40,7 +40,7 @@ public class APITest {
 		a[0] = 99;
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		
 		
 		
@@ -707,12 +707,11 @@ public class APITest {
 		System.out.println(var1);
 		System.out.println(var2);
 		*/
-		HashSet<Integer> set = new HashSet<Integer>();
-		set.add(9);
-		set.add(2);
-		set.add(14);
-		for (Integer i: set)
-			System.out.println(i);
+		
+		String site = "http://blog.yufeng.info";
+		String seed = "blog.yufeng.info/archives/99";
+		String[] arg = { site, seed };
+		BlogCrawlController.main(arg);
 	}
 }
 
@@ -738,5 +737,50 @@ public class APITest {
 		}
  */
 
+/*
 
+switch (1) {
+			case 1: {
+				site = new String("http://blog.yufeng.info").toLowerCase();
+//				seed = new String("http://blog.yufeng.info/archives/2234");
+				seed = new String("http://blog.yufeng.info/archives/category/erlang");
+				break;
+			}
+			case 2: {
+				site = new String("http://www.cppblog.com/vczh/").toLowerCase();
+//				seed = new String("http://www.cppblog.com/vczh/archive/2010/07/07/119562.html");
+				seed = new String("http://www.cppblog.com/vczh/category/6885.html");
+				break;
+			}
+			case 3: {
+				site = new String("http://www.guwendong.com/").toLowerCase();
+				seed = new String("http://www.guwendong.com/post/2012/xlvector_recsys_book.html");
+				break;
+			}
+			case 4: {
+				site = new String("http://dinglin.iteye.com/").toLowerCase();
+				seed = new String("http://dinglin.iteye.com/?from=yufeng");
+				break;
+			}
+			case 5: {
+				site = new String("http://www.searchtb.com").toLowerCase();
+//				seed = new String("http://www.searchtb.com/2012/08/");
+				seed = new String("http://www.searchtb.com/2012/08/zeromq-primer.html");
+				break;
+			}
+			case 6: {
+				site = new String("http://www.yankay.com").toLowerCase();
+				seed = new String("http://www.yankay.com/java-fast-byte-comparison/");
+				break;
+			}
+			case 7: {
+				site = new String("http://verypig.com/").toLowerCase();
+				seed = new String("http://verypig.com/?p=393");
+				break;
+			}
+		}
+
+
+ * 
+ */
 

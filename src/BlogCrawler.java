@@ -125,9 +125,8 @@ public class BlogCrawler extends WebCrawler {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String html = htmlParseData.getHtml();
 			
-			System.out.println("Docid: " + docid);
-			System.out.println("URL: " + url);
-			System.out.println(Util.isPost(html) + ", \n"); 
+			System.out.println("Docid: " + docid + "\nURL: " + url + "\n"
+					+ Util.isPost(html) + ", \n"); 
 /*	
 			System.out.println(htmlParseData.getHtml().replaceAll("<script[^>]*>[^<]*</script>", "").replaceAll("<[^<>]*>", ""));
 

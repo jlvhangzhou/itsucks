@@ -1,5 +1,25 @@
+import edu.uci.ics.crawler4j.crawler.CrawlConfig;
+
 
 public class Util {
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  统一定义爬虫参数
+	 */
+
+	public static final int numberOfCrawlers = 8;
+	
+	public static CrawlConfig getGlobalCrawlCongig(int maxPagesToFetch) {
+		CrawlConfig config = new CrawlConfig();
+		config.setCrawlStorageFolder("/home/wiza/data/crawler4j");
+		config.setPolitenessDelay(125);
+		config.setMaxDepthOfCrawling(-1);
+		config.setMaxPagesToFetch(maxPagesToFetch);
+		config.setResumableCrawling(false);
+		
+		return config;
+	}
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
@@ -73,8 +93,12 @@ public class Util {
 			/*
 			 *  numberOfComment[i] 可以等于 0, 1, 2
 			 */
-			numberOfComments[i] = Math.min(1, lines[i].split("[Cc]omment").length - 1);
-			numberOfComments[i] += Math.min(1, lines[i].split("[Rr]eply").length - 1);
+			if (i < lastLine / 5) {
+				numberOfComments[i] = 0;
+			} else {
+				numberOfComments[i] = Math.min(1, lines[i].split("[Cc]omment").length - 1);
+				numberOfComments[i] += Math.min(1, lines[i].split("[Rr]eply").length - 1);
+			}
 			sumOfComments[i] = sumOfComments[i-1] + numberOfComments[i];
 			if (numberOfComments[i] == 0) continue;
 			if (firstComment == -1) {
@@ -111,12 +135,12 @@ public class Util {
 			}
 		}
 		
-//		System.out.println("begin comment blog: " + beginOfCommentBlock);				// useless code
-//		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
-//		System.out.println("total lines: " + totalLines);								// useless code
+		System.out.println("begin comment blog: " + beginOfCommentBlock);				// useless code
+		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
+		System.out.println("total lines: " + totalLines);								// useless code
 		
 		/*
-		 *  去除 Comment Block 包含的年份和title
+		 *  删除 Comment Block 包含的年份和title
 		 */
 		for (int i = beginOfCommentBlock; i < endOfCommentBlock; i++)
 			lines[i] = removeYears(lines[i]).replace("[Tt]itle", "");
@@ -124,6 +148,12 @@ public class Util {
 		String main = lines[0] + "\n";
 		int numberOfTitles = 0;
 		for (int i = 1; i <= lastLine; i++) {
+			/*
+			 *  删除正文中的年份
+			 */
+			if (!lines[i].contains("<") && !lines[i].contains(">"))
+				lines[i] = Util.removeYears(lines[i]);
+			
 			main += lines[i] + "\n";
 			/*
 			 *  计算页面前部分内 title 的数量
@@ -144,7 +174,7 @@ public class Util {
 		
 		int countYears = 0;
 		/*
-		 *  去除可能的年份列表
+		 *  删除可能的年份列表
 		 *  防止页脚的版权年份干扰, 只取 9/10 的内容
 		 */
 		for (int i = 2; i <= lines.length * 9 / 10; i++) {
@@ -161,9 +191,9 @@ public class Util {
 		
 		double titleRate = (double)numberOfTitles / totalLines;
 			
-//		System.out.println("title number: " + numberOfTitles);				// useless code
-//		System.out.println("title rate: " + titleRate);					// useless code
-//		System.out.println("year occurs: " + countYears);					// useless code
+		System.out.println("title number: " + numberOfTitles);				// useless code
+		System.out.println("title rate: " + titleRate);					// useless code
+		System.out.println("year occurs: " + countYears);					// useless code
 		
 		return titleRate * countYears * 10;
 	}
@@ -237,9 +267,31 @@ public class Util {
 		return result;
 	}
 	
+	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  计算list页面和post页面的临界值
+	 *  转换URL的格式
 	 */
+	
+	public static String URLCrawlFormat(String url) {
+		String newFormat= url;
+		if (!newFormat.contains("://")) {
+			newFormat = "http://" + newFormat;
+		}
+		return newFormat;
+	}
+	
+	public static String URLDBFormat(String url) {
+		String newFormat = url;
+		while (newFormat.endsWith("/")) {
+			/*
+			 *  该转换会稍稍降低爬虫的效率
+			 */
+			newFormat = newFormat.substring(0, newFormat.length() - 1);
+		}
+		int index = newFormat.indexOf("://");
+		if (index != -1) newFormat = newFormat.substring(index + 3);
+		return newFormat;
+	}
 	
 }
