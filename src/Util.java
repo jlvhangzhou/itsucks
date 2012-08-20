@@ -1,5 +1,8 @@
-import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 
+import java.util.Arrays;
+
+import edu.uci.ics.crawler4j.crawler.CrawlConfig;
+import edu.uci.ics.crawler4j.url.WebURL;
 
 public class Util {
 	
@@ -93,12 +96,8 @@ public class Util {
 			/*
 			 *  numberOfComment[i] 可以等于 0, 1, 2
 			 */
-			if (i < lastLine / 5) {
-				numberOfComments[i] = 0;
-			} else {
-				numberOfComments[i] = Math.min(1, lines[i].split("[Cc]omment").length - 1);
-				numberOfComments[i] += Math.min(1, lines[i].split("[Rr]eply").length - 1);
-			}
+			numberOfComments[i] = Math.min(1, lines[i].split("[Cc]omment").length - 1);
+			numberOfComments[i] += Math.min(1, lines[i].split("[Rr]eply").length - 1);
 			sumOfComments[i] = sumOfComments[i-1] + numberOfComments[i];
 			if (numberOfComments[i] == 0) continue;
 			if (firstComment == -1) {
@@ -135,36 +134,32 @@ public class Util {
 			}
 		}
 		
-		System.out.println("begin comment blog: " + beginOfCommentBlock);				// useless code
-		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
-		System.out.println("total lines: " + totalLines);								// useless code
+//		System.out.println("begin comment blog: " + beginOfCommentBlock);				// useless code
+//		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
+//		System.out.println("total lines: " + totalLines);								// useless code
+		double commentRate = (double) numberOfCommentsWithin(beginOfCommentBlock, endOfCommentBlock, sumOfComments)
+				/ (endOfCommentBlock - beginOfCommentBlock + 1);
 		
 		/*
-		 *  删除 Comment Block 包含的年份和title
+		 *  删除 Comment Block 包含的年份
 		 */
 		for (int i = beginOfCommentBlock; i < endOfCommentBlock; i++)
-			lines[i] = removeYears(lines[i]).replace("[Tt]itle", "");
+			lines[i] = removeYears(lines[i]);
 		
 		String main = lines[0] + "\n";
-		int numberOfTitles = 0;
 		for (int i = 1; i <= lastLine; i++) {
 			/*
 			 *  删除正文中的年份
 			 */
 			if (!lines[i].contains("<") && !lines[i].contains(">"))
-				lines[i] = Util.removeYears(lines[i]);
+				lines[i] = removeYears(lines[i]);
 			
 			main += lines[i] + "\n";
-			/*
-			 *  计算页面前部分内 title 的数量
-			 */
-			if (i < lastLine * 2 / 3)
-				numberOfTitles += Math.min(1, lines[i].split("[Tt]itle").length - 1);
 		}
 		
 		String mainText = removeEmptyLines(fliterTag(main));
 		/*
-		 *  注意 lines[] 开始写入删除Tag和空行后的内容 
+		 *  lines[] 写入删除Tag和空行后的内容 
 		 */
 		lines = mainText.split("\n");
 		int[] numberOfYears = new int[lines.length];
@@ -189,13 +184,7 @@ public class Util {
 		}
 		countYears = Math.max(2, countYears);
 		
-		double titleRate = (double)numberOfTitles / totalLines;
-			
-		System.out.println("title number: " + numberOfTitles);				// useless code
-		System.out.println("title rate: " + titleRate);					// useless code
-		System.out.println("year occurs: " + countYears);					// useless code
-		
-		return titleRate * countYears * 10;
+		return (double)countYears;
 	}
 	
 	/**
@@ -224,10 +213,12 @@ public class Util {
 		return result;
 	}
 	
+	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  删除字符串中的所有年份
 	 */
+	
 	
 	public static String removeYears(String line) {
 		char[] chars = line.toCharArray();
@@ -246,10 +237,12 @@ public class Util {
 		return result;
 	}
 	
+	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  对(不)规则html除去标签
 	 */
+	
 	
 	public static String fliterTag(String html) {
 		String result = html.replaceAll("<script[^>]*>[^<]*</script>", "");
@@ -257,10 +250,12 @@ public class Util {
 		return result;
 	}
 	
+	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  删除空行
 	 */
+	
 	
 	public static String removeEmptyLines(String text) {
 		String result = text.replaceAll("[ \t]+\n", "\n").replaceAll("\n+", "\n");
@@ -294,4 +289,51 @@ public class Util {
 		return newFormat;
 	}
 	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  计算评分数据的临界值(临界值在后半区)
+	 */
+	
+	public static double getThreshold(double[] scores) {
+		Arrays.sort(scores);
+		double total = 0;
+		int length = scores.length;
+		int fence = length - 1;
+		for (int i = 0; i < length; i++) {
+			total += scores[i];
+			/*
+			 *  前 20% 数据默认合格
+			 */
+			if (i < length / 5) continue;
+			if (scores[i] > total/(i+1) * 5 / 3) {
+				fence = i;
+				break;
+			}
+		}
+		return scores[fence];
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  Crawler 用来判断URL是否访问
+	 */
+	
+	public static boolean shouldVisit(WebURL url, String site) {
+		String href = url.getURL().toLowerCase();
+		if ( ! href.startsWith(site.toLowerCase()) ) return false;
+		
+		String path = href.substring(site.length());
+		
+		return !path.contains("#") && !path.contains("&") 
+				&& (!path.contains(".") || path.endsWith(".html") || path.endsWith(".htm")) 
+				&& !path.endsWith("/feed") && !path.endsWith("/feed/")
+				&& !path.endsWith("/rss") && !path.endsWith("/rss/")
+				&& !path.contains("/tag/");
+	}
+	
+	/*
+	 *  
+	 */
+	
 }
+

@@ -19,9 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
+import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
@@ -30,7 +34,7 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
  *  爬取指定blog站内的所有post页面
  */
 
-public class BlogCrawlController {
+public class ProbeCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
