@@ -118,18 +118,16 @@ public class BlogCrawler extends WebCrawler {
 		String path = page.getWebURL().getPath();
 		String subDomain = page.getWebURL().getSubDomain();
 		String parentUrl = page.getWebURL().getParentUrl();
+//		System.out.println(url.replaceAll("/$", "").replaceAll("/[^/]+$", "/"));
 
 		if (page.getParseData() instanceof HtmlParseData) {
 			
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String html = htmlParseData.getHtml();
-			Jedis jedis = pool.getResource();
-			jedis.set("html", html);
-			pool.returnResource(jedis);
 			
-//			System.out.println("Docid: " + docid);
-//			System.out.println("URL: " + url);
-			System.out.println(Util.isPost(html) + ", "); 
+			System.out.println("Docid: " + docid);
+			System.out.println("URL: " + url);
+			System.out.println(Util.isPost(html) + ", \n"); 
 /*	
 			System.out.println(htmlParseData.getHtml().replaceAll("<script[^>]*>[^<]*</script>", "").replaceAll("<[^<>]*>", ""));
 

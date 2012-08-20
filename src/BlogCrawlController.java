@@ -65,7 +65,7 @@ public class BlogCrawlController {
 		 * You can set the maximum number of pages to crawl. The default value
 		 * is -1 for unlimited number of pages
 		 */
-		config.setMaxPagesToFetch(1);
+		config.setMaxPagesToFetch(-1);
 
 		/*
 		 * Do you need to set a proxy? If so, you can use:
@@ -102,7 +102,7 @@ public class BlogCrawlController {
 		
 		String site = "", seed = "";
 		
-		switch (8) {
+		switch (1) {
 			case 1: {
 				site = new String("http://blog.yufeng.info").toLowerCase();
 //				seed = new String("http://blog.yufeng.info/archives/2234");
@@ -140,10 +140,6 @@ public class BlogCrawlController {
 				site = new String("http://verypig.com/").toLowerCase();
 				seed = new String("http://verypig.com/?p=393");
 				break;
-			}
-			case 8: {
-				site = new String("http://www.china-pub.com/").toLowerCase();
-				seed = new String("http://www.china-pub.com/");
 			}
 		}
 		

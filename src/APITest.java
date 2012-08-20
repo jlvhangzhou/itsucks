@@ -707,11 +707,12 @@ public class APITest {
 		System.out.println(var1);
 		System.out.println(var2);
 		*/
-		
-		JedisPool pool = new JedisPool("meepo-0");
-		Jedis jedis = pool.getResource();
-		String orig = jedis.get("html");
-		System.out.println(orig);
+		HashSet<Integer> set = new HashSet<Integer>();
+		set.add(9);
+		set.add(2);
+		set.add(14);
+		for (Integer i: set)
+			System.out.println(i);
 	}
 }
 

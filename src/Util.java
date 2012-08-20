@@ -71,9 +71,10 @@ public class Util {
 		numberOfComments[0] = sumOfComments[0] = 0;
 		for (int i = 1; i <= lastLine; i++) {
 			/*
-			 *  numberOfComment[i]等于0或者1
+			 *  numberOfComment[i] 可以等于 0, 1, 2
 			 */
 			numberOfComments[i] = Math.min(1, lines[i].split("[Cc]omment").length - 1);
+			numberOfComments[i] += Math.min(1, lines[i].split("[Rr]eply").length - 1);
 			sumOfComments[i] = sumOfComments[i-1] + numberOfComments[i];
 			if (numberOfComments[i] == 0) continue;
 			if (firstComment == -1) {
@@ -89,10 +90,9 @@ public class Util {
 			/*
 			 *  假设 body = content + LineX + comment + LineY + footer
 			 *  行数分别为 Rl, Sl, Tl
-			 *  带comment的行数为 Rc, Sc, Tc
-			 *  枚举LineX和LineY使 Sl * Rc * Tc / Sc^2 / Rl / Tl 最小
+			 *  带 comment 的行数为 Rc, Sc, Tc
+			 *  枚举 LineX 和 LineY 使 Sl * Rc * Tc / Sc^2 / Rl / Tl 最小
 			 */
-
 			double minProduct = Double.MAX_VALUE;
 			
 			for (int i = firstComment; i <= lastComment; i++) {
@@ -115,6 +115,9 @@ public class Util {
 //		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
 //		System.out.println("total lines: " + totalLines);								// useless code
 		
+		/*
+		 *  去除 Comment Block 包含的年份和title
+		 */
 		for (int i = beginOfCommentBlock; i < endOfCommentBlock; i++)
 			lines[i] = removeYears(lines[i]).replace("[Tt]itle", "");
 		
@@ -122,27 +125,33 @@ public class Util {
 		int numberOfTitles = 0;
 		for (int i = 1; i <= lastLine; i++) {
 			main += lines[i] + "\n";
+			/*
+			 *  计算页面前部分内 title 的数量
+			 */
 			if (i < lastLine * 2 / 3)
 				numberOfTitles += Math.min(1, lines[i].split("[Tt]itle").length - 1);
 		}
 		
 		String mainText = removeEmptyLines(fliterTag(main));
 		/*
-		 *  注意lines[]不再是body的内容
+		 *  注意 lines[] 开始写入删除Tag和空行后的内容 
 		 */
 		lines = mainText.split("\n");
 		int[] numberOfYears = new int[lines.length];
 		for (int i = 0; i < lines.length; i++) {
-			numberOfYears[i] = numberOfYears(lines[i]);
+			numberOfYears[i] = Math.min(1, numberOfYears(lines[i]));
 		}
 		
 		int countYears = 0;
 		/*
 		 *  去除可能的年份列表
-		 *  防止页脚的版权年号干扰, 只取 9/10 的内容
+		 *  防止页脚的版权年份干扰, 只取 9/10 的内容
 		 */
 		for (int i = 2; i <= lines.length * 9 / 10; i++) {
 			if (numberOfYears[i] == 0) continue;
+			/*
+			 *  不统计局部出现的大量年份
+			 */
 			if (numberOfYears[i-2] + numberOfYears[i-1] + numberOfYears[i] >= 3) continue;
 			if (numberOfYears[i+1] + numberOfYears[i-1] + numberOfYears[i] >= 3) continue;
 			if (numberOfYears[i+2] + numberOfYears[i+1] + numberOfYears[i] >= 3) continue;
@@ -152,7 +161,7 @@ public class Util {
 		
 		double titleRate = (double)numberOfTitles / totalLines;
 			
-//		System.out.println("title number: " + numberOfTitles);
+//		System.out.println("title number: " + numberOfTitles);				// useless code
 //		System.out.println("title rate: " + titleRate);					// useless code
 //		System.out.println("year occurs: " + countYears);					// useless code
 		
