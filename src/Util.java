@@ -187,7 +187,7 @@ public class Util {
 			if (numberOfYears[i+2] + numberOfYears[i+1] + numberOfYears[i] >= 3) continue;
 			countYears++;
 		}
-		countYears = Math.max(1, countYears);
+		countYears = Math.max(2, countYears);
 		
 		double titleRate = (double)numberOfTitles / totalLines;
 			
