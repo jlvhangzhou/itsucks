@@ -48,15 +48,18 @@ public class ProbeCrawlController {
 		/*
 		 *  以下两行不可遗漏
 		 */
-		String site = Util.URLCrawlFormat(args[0]);
-		String seed = Util.URLCrawlFormat(args[1]);
+//		String site = Util.URLCrawlFormat(args[0]);
+//		String seed = Util.URLCrawlFormat(args[1]);
+		String site = "http://www.cppblog.com/vczh";
+		String seed = "http://www.cppblog.com/vczh";
+		
 		
 		ProbeCrawler.texts = new ArrayList<String>();
 		ProbeCrawler.totalFetchPages = 0;
 		ProbeCrawler.site = site;
 		
 		controller.addSeed(seed);
-		controller.start(BlogCrawler.class, Util.numberOfCrawlers);
+		controller.start(ProbeCrawler.class, Util.numberOfCrawlers);
 		
 		JedisPool pool = new JedisPool(Util.MasterHost);
 		Jedis jedis = pool.getResource();

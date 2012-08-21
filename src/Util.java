@@ -1,7 +1,24 @@
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.util.Version;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.url.WebURL;
@@ -14,8 +31,18 @@ public class Util {
 	 */
 	
 	public static final String userHome = "/home/wiza/";
-	public static final String luceneIndexDir = userHome + "data/lucene/blog";
-	public static final String crawler4jDataDir = userHome + "data/crawler4j";
+	public static final String blogIndexDir = userHome + "/data/lucene/blog/";
+	public static final String chinapubIndexDir = userHome + "/data/lucene/chinapub/";
+	public static final String crawler4jDataDir = userHome + "/data/crawler4j/";
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  定义 lucene 相关参数
+	 */
+	
+	public static final String[] fields = {"url", "title", "abstract", "content"};
+	public static final Version luceneVersion = Version.LUCENE_40; 
+	public static final Analyzer smartcn = new SmartChineseAnalyzer(luceneVersion);
 	
 	/** 
 	 *  @author Wu Hualiang <wizawu@gmail.com>
@@ -415,12 +442,13 @@ public class Util {
 	 *  评定 texts 是否相似 IT-blog 的内容
 	 */
 	
-	public static boolean isQualifiedITblog(ArrayList<String> texts) {
+	public static boolean isQualifiedITblog(ArrayList<String> texts) throws IOException, ParseException {
 		double maxGrade = 0;
-		double threshold = 0.1;
+		double threshold = 0.0001;
 		for (String t: texts) {
 			maxGrade = Math.max(maxGrade, grade(t));
 		}
+		System.out.println(maxGrade);
 		return maxGrade > threshold;
 	}
 	
@@ -429,9 +457,59 @@ public class Util {
 	 *  返回 text 的评分
 	 */
 	
-	public static double grade(String text) {
+	public static double grade(String text) throws IOException, ParseException {
+		String line = text.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("]", " ");
+		System.out.println(line);
+		QueryParser parser = new QueryParser(luceneVersion, "_@_#_", smartcn);
+		Query query = parser.parse(line);
+		String[] tokens = query.toString().split("\\+_@_#_:");
+		double sum = 0;
+		for (String token: tokens) {
+			sum += tokenGrade(token);
+		}
+		return sum / Math.sqrt(line.length());
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  计算单词的评分
+	 */
+	
+	public static double tokenGrade(String token) throws IOException, ParseException {
+		IndexReader reader = getIndexReader();
+		IndexSearcher searcher = new IndexSearcher(reader);
+		int numDocs = reader.numDocs();
+		QueryParser parser = new MultiFieldQueryParser(luceneVersion, fields, smartcn);
+		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
+		Query query = parser.parse(token);
+		TopDocs hits = searcher.search(query, numDocs);
+		return compute( (double)(hits.totalHits) / numDocs );
+	}
+	
+	public static double compute(double rate) {
+		return Math.sin(Math.PI * Math.sqrt(rate)) * 2;
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  返回 IndexReader
+	 */
+	
+	public static IndexReader getIndexReader() throws IOException {
+		String[] strs = { chinapubIndexDir, blogIndexDir };
+		int size = strs.length;
 		
-		return 0;
+		File[] files = new File[size];
+		Directory[] dirs = new Directory[size];
+		IndexReader[] readers = new IndexReader[size];
+		
+		for (int i = 0; i < size; i++) {
+			files[i] = new File(strs[i]);
+			dirs[i] = new MMapDirectory(files[i]);
+			readers[i] = IndexReader.open(dirs[i]);
+		}
+		
+		return new MultiReader(readers);
 	}
 }
 

@@ -10,6 +10,12 @@ import redis.clients.jedis.*;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.pool.impl.GenericObjectPool.Config;
 import org.apache.http.HttpEntity;
+import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.util.Version;
 import org.apache.tika.parser.html.HtmlParser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -38,7 +44,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 
 public class APITest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException, UnsupportedEncodingException {
 //		String str = new String("刘翔加油");
 //		str = new String(str.getBytes("UTF-8"), "UTF-8");
 //		System.out.println(str);
@@ -174,10 +180,20 @@ public class APITest {
 //		String[] arg = { site, seed };
 //		BlogCrawlController.main(arg);
 		
-		String str = "www.cppblog.com";
-		System.out.println(str.split("/").length);
+		String str = "我们都喜欢Java，但是不喜欢C++，因为后者很恶心XML的���则表";
+		str = new String(str.getBytes("UTF-16"), "UTF-16");
+		System.out.println(str);
 		
+		QueryParser parser = 
+				new QueryParser(Version.LUCENE_40, "_@_#_", new SmartChineseAnalyzer(Version.LUCENE_40));
 		
+		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
+		
+		Query query = parser.parse(str);
+//		System.out.println(query.toString());
+		for (String i: query.toString().split("\\+_@_#_:")) {
+			System.out.println(i);
+		}
 		
 	}
 }
