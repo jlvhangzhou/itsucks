@@ -21,8 +21,6 @@ import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.zip.CRC32;
 
 /**
  *  @author Wu Hualiang <wizawu@gmail.com>
@@ -33,6 +31,7 @@ public class ProbeCrawler extends WebCrawler {
 	
 	public static int totalFetchPages;
 	public static String site;
+	public static ArrayList<String> texts;
 	
 	public boolean shouldVisit(WebURL url) {
 		return Util.shouldVisit(url, site);
@@ -40,18 +39,14 @@ public class ProbeCrawler extends WebCrawler {
 
 	@Override
 	public void visit(Page page) {
-
 		if (page.getParseData() instanceof HtmlParseData) {
-			
-			String url = page.getWebURL().getURL();
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-			
-			String title = htmlParseData.getTitle();
-			CRC32 crc32 = new CRC32();
-			crc32.update(title.getBytes());
-			Long key = crc32.getValue();
-			
-			
+			String text = Util.getMainBody(htmlParseData.getText());
+			if (text == null) return;
+			totalFetchPages++;
+			if (totalFetchPages % 2 == 1) {
+				texts.add(text);
+			}
 		} 
 	}
 }

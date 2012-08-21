@@ -61,17 +61,17 @@ public class BlogCrawlController {
 			scores[i] = s;
 			i++;
 		}
-		int a = 0, b = 0;
 		double threshold = Util.getThreshold(scores);
+		
 		Set<Long> keys = BlogCrawler.CRC32_html.keySet();
 		for (Long key: keys) {
 			MyHtmlClass x = BlogCrawler.CRC32_html.get(key); 
-			a++;
 			if (x.score + 1e-6 < threshold) {
+				/*
+				 *  爬虫数据持久化
+				 */
 				System.out.println(x.url + "\n" + x.score);
-				b++;
 			}
 		}
-		System.out.println(b + "/" + a + "  " + threshold);
 	}
 }

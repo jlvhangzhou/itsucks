@@ -82,7 +82,7 @@ public class BlogCrawler extends WebCrawler {
 				scores.add(score);
 			}
 			
-			System.out.println(url + '\n' + CRC32_html.get(key).score + '\n');
+//			System.out.println(url + '\n' + CRC32_html.get(key).score);					// useless code
 		} 
 	}
 }

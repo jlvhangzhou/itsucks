@@ -25,20 +25,19 @@ import redis.clients.jedis.JedisPool;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
-import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 /**
  *  @author Wu Hualiang <wizawu@gmail.com>
- *  爬取指定blog站内的所有post页面
+ *  爬取指定网站若干个页面
  */
 
 public class ProbeCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
-		int maxPagesToFetch = 2000;
+		int maxPagesToFetch = 30;
 		CrawlConfig config = Util.getGlobalCrawlCongig(maxPagesToFetch);
 		
 		PageFetcher pageFetcher = new PageFetcher(config);
@@ -52,30 +51,26 @@ public class ProbeCrawlController {
 		String site = Util.URLCrawlFormat(args[0]);
 		String seed = Util.URLCrawlFormat(args[1]);
 		
-		BlogCrawler.scores = new ArrayList<Double>();
-		BlogCrawler.CRC32_html = new HashMap<>();
-		BlogCrawler.site = site;
+		ProbeCrawler.texts = new ArrayList<String>();
+		ProbeCrawler.totalFetchPages = 0;
+		ProbeCrawler.site = site;
 		
 		controller.addSeed(seed);
 		controller.start(BlogCrawler.class, Util.numberOfCrawlers);
 		
-		double[] scores = new double[BlogCrawler.scores.size()];
-		int i = 0;
-		for (double s: BlogCrawler.scores) {
-			scores[i] = s;
-			i++;
-		}
-		int a = 0, b = 0;
-		double threshold = Util.getThreshold(scores);
-		Set<Long> keys = BlogCrawler.CRC32_html.keySet();
-		for (Long key: keys) {
-			MyHtmlClass x = BlogCrawler.CRC32_html.get(key); 
-			a++;
-			if (x.score + 1e-6 < threshold) {
-				System.out.println(x.url + "\n" + x.score);
-				b++;
+		JedisPool pool = new JedisPool(Util.MasterHost);
+		Jedis jedis = pool.getResource();
+		
+		if (ProbeCrawler.texts.size() < maxPagesToFetch / 2) {
+			if (Util.URLDBFormat(Util.getRoot(site)) != Util.URLDBFormat(site)) {
+				jedis.sadd(Util.applydb, Util.URLDBFormat(Util.getRoot(site)));
 			}
+		} else {
+			if (Util.isQualifiedITblog(ProbeCrawler.texts))
+				jedis.sadd(Util.interviewdb, Util.URLDBFormat(site));
 		}
-		System.out.println(b + "/" + a + "  " + threshold);
+		
+		pool.returnResource(jedis);
+		pool.destroy();
 	}
 }

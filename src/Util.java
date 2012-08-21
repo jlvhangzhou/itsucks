@@ -1,4 +1,6 @@
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
@@ -8,14 +10,34 @@ public class Util {
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  统一定义爬虫参数
+	 *  定义文件夹位置
+	 */
+	
+	public static final String userHome = "/home/wiza/";
+	public static final String luceneIndexDir = userHome + "data/lucene/blog";
+	public static final String crawler4jDataDir = userHome + "data/crawler4j";
+	
+	/** 
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  定义 redis 数据库名称
+	 */
+	
+	public static final String applydb = "apply";
+	public static final String interviewdb = "interview";
+	public static final String acceptdb = "accept";
+	public static final String rejectdb = "reject";
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  定义爬虫参数
 	 */
 
 	public static final int numberOfCrawlers = 8;
+	public static final String MasterHost = "meepo-0";
 	
 	public static CrawlConfig getGlobalCrawlCongig(int maxPagesToFetch) {
 		CrawlConfig config = new CrawlConfig();
-		config.setCrawlStorageFolder("/home/wiza/data/crawler4j");
+		config.setCrawlStorageFolder(crawler4jDataDir);
 		config.setPolitenessDelay(125);
 		config.setMaxDepthOfCrawling(-1);
 		config.setMaxPagesToFetch(maxPagesToFetch);
@@ -68,7 +90,10 @@ public class Util {
 		for (int i = start + 1; i < end; i++) {
 			result += lines[i] + "\n";
 		}
-		return result;
+		/*
+		 *  转换成 UTF-8 编码
+		 */
+		return toUTF8String(result);
 	}
 	
 	/**
@@ -137,8 +162,6 @@ public class Util {
 //		System.out.println("begin comment blog: " + beginOfCommentBlock);				// useless code
 //		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
 //		System.out.println("total lines: " + totalLines);								// useless code
-		double commentRate = (double) numberOfCommentsWithin(beginOfCommentBlock, endOfCommentBlock, sumOfComments)
-				/ (endOfCommentBlock - beginOfCommentBlock + 1);
 		
 		/*
 		 *  删除 Comment Block 包含的年份
@@ -213,12 +236,10 @@ public class Util {
 		return result;
 	}
 	
-	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  删除字符串中的所有年份
 	 */
-	
 	
 	public static String removeYears(String line) {
 		char[] chars = line.toCharArray();
@@ -237,12 +258,10 @@ public class Util {
 		return result;
 	}
 	
-	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  对(不)规则html除去标签
 	 */
-	
 	
 	public static String fliterTag(String html) {
 		String result = html.replaceAll("<script[^>]*>[^<]*</script>", "");
@@ -250,12 +269,10 @@ public class Util {
 		return result;
 	}
 	
-	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  删除空行
 	 */
-	
 	
 	public static String removeEmptyLines(String text) {
 		String result = text.replaceAll("[ \t]+\n", "\n").replaceAll("\n+", "\n");
@@ -331,9 +348,90 @@ public class Util {
 				&& !path.contains("/tag/");
 	}
 	
-	/*
-	 *  
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  Crawler 用来判断URL是否出链
 	 */
 	
+	public static boolean isOutLink(WebURL url, String site) {
+		String href = url.getURL().toLowerCase();
+		if ( href.contains(Util.URLDBFormat(site.toLowerCase())) ) return false;
+		
+		String root = Util.getRoot(href);
+		String path = href.substring(root.length());
+		
+		return !path.contains("#") && !path.contains("&") 
+				&& (!path.contains(".") || path.endsWith(".html") || path.endsWith(".htm")) 
+				&& !path.endsWith("/feed") && !path.endsWith("/feed/")
+				&& !path.endsWith("/rss") && !path.endsWith("/rss/")
+				&& !path.contains("/tag/");
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  返回 URL 的父路径
+	 */
+	
+	public static String getSecondRoot(String url) {
+		int index = url.indexOf("://");
+		String protocol = "";
+		if (index != -1) protocol = url.substring(0, index + 3);
+		String ret = URLDBFormat(url);
+		if (!ret.contains("/")) return null;
+		while (ret.split("/").length > 2) {
+			ret = ret.substring(0, ret.length() - 1);
+		}
+		if (ret.endsWith("/")) ret = ret.substring(0, ret.length() - 1);
+		return protocol + ret;
+	}
+	
+	public static String getRoot(String url) {
+		int index = url.indexOf("://");
+		String protocol = "";
+		if (index != -1) protocol = url.substring(0, index + 3);
+		String ret = URLDBFormat(url);
+		while (ret.contains("/")) {
+			ret = ret.substring(0, ret.length() - 1);
+		}
+		return protocol + ret;
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  将任何编码的字符串转为 UTF-8
+	 */
+	
+	public static String toUTF8String(String str) {
+		try {
+			return new String(str.getBytes("UTF-8"), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  评定 texts 是否相似 IT-blog 的内容
+	 */
+	
+	public static boolean isQualifiedITblog(ArrayList<String> texts) {
+		double maxGrade = 0;
+		double threshold = 0.1;
+		for (String t: texts) {
+			maxGrade = Math.max(maxGrade, grade(t));
+		}
+		return maxGrade > threshold;
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  返回 text 的评分
+	 */
+	
+	public static double grade(String text) {
+		
+		return 0;
+	}
 }
 

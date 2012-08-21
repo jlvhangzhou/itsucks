@@ -38,7 +38,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 
 public class APITest {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 //		String str = new String("刘翔加油");
 //		str = new String(str.getBytes("UTF-8"), "UTF-8");
 //		System.out.println(str);
@@ -167,12 +167,17 @@ public class APITest {
 		System.out.println(var2);
 		*/
 		
-		String site = "http://www.guwendong.com/";
-		String seed = "http://www.guwendong.com/";
-//		String site = "www.cppblog.com/vczh";
-//		String seed = "http://www.cppblog.com/vczh/archive/2010/07/07/119562.html";
-		String[] arg = { site, seed };
-		BlogCrawlController.main(arg);
+//		String site = "blog.linezing.com";
+//		String seed = "blog.linezing.com";
+////		String site = "www.cppblog.com/vczh";
+////		String seed = "http://www.cppblog.com/vczh/archive/2010/07/07/119562.html";
+//		String[] arg = { site, seed };
+//		BlogCrawlController.main(arg);
+		
+		String str = "www.cppblog.com";
+		System.out.println(str.split("/").length);
+		
+		
 		
 	}
 }
