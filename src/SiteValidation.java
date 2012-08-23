@@ -16,12 +16,15 @@ public class SiteValidation {
 		
 		while (jedis.scard(Util.applydb) != 0) {
 			String member = jedis.srandmember(Util.applydb);
-			if ( jedis.sismember(Util.interviewdb, member) || jedis.sismember(Util.acceptdb, member) || 
-					jedis.sismember(Util.rejectdb, member) )
-				continue;
 			
-			String[] crawlArgs = { member, member };
-			ProbeCrawlController.main(crawlArgs);
+			if ( jedis.sismember(Util.interviewdb, member) || jedis.sismember(Util.acceptdb, member) || 
+					jedis.sismember(Util.rejectdb, member) ) {
+				// pass
+			} else {
+				String[] crawlArgs = { member, member };
+				ProbeCrawlController.main(crawlArgs);
+			}
+			
 			jedis.srem(Util.applydb, member);
 		}
 		
