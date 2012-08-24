@@ -1,13 +1,15 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -40,9 +42,8 @@ public class Util {
 	 *  定义 lucene 相关参数
 	 */
 	
-	public static final String[] fields = {"url", "title", "abstract", "content"};
+	public static final String[] fields = {"site", "title", "abstract", "content"};
 	public static final Version luceneVersion = Version.LUCENE_40; 
-	public static final Analyzer smartcn = new SmartChineseAnalyzer(luceneVersion);
 	
 	/** 
 	 *  @author Wu Hualiang <wizawu@gmail.com>
@@ -84,14 +85,15 @@ public class Util {
 	
 	public static String getMainBody(String text) {
 		
-		String[] lines = text.split("\n");
+		String[] lines = text.split("[\n\r]+");
 		int totalLines = lines.length;
 		int[] lineLength = new int[totalLines];
 		for (int i = 0; i < totalLines; i++)
 			lineLength[i] = lines[i].length();
 
-		int[] blockLength = new int[totalLines - blockThickness + 1];
+		if (totalLines - blockThickness < 0) return null;
 		
+		int[] blockLength = new int[totalLines - blockThickness + 1];
 		for (int i = 0; i < blockLength.length; i++) {
 			int sum = 0;
 			for (int j = 0; j < blockThickness; j++) {
@@ -99,13 +101,15 @@ public class Util {
 			}
 			blockLength[i] = sum;
 		}
-
+		
+		if (minStart + 1 >= blockLength.length) return null; 
+		
 		int start = minStart, end = totalLines;
 		for (int i = start; i < blockLength.length - 1; i++) {
 			if (blockLength[i] < minChars) continue;
 			if (blockLength[i + 1] == 0) continue;
 			start = i;
-			for (int j = i; j < totalLines; j++)
+			for (int j = i; j < blockLength.length; j++)
 				if (blockLength[j] == 0) {
 					end = j;
 					break;
@@ -306,7 +310,6 @@ public class Util {
 		return result;
 	}
 	
-	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  转换URL的格式
@@ -443,13 +446,17 @@ public class Util {
 	 */
 	
 	public static boolean isQualifiedITblog(ArrayList<String> texts) throws IOException, ParseException {
-		double maxGrade = 0;
-		double threshold = 0.0001;
+		double threshold = 5;
+ 		double maxGrade = 0;
+		int count = 0;
 		for (String t: texts) {
-			maxGrade = Math.max(maxGrade, grade(t));
+			double g = grade(t);
+			maxGrade = Math.max(maxGrade, g);
+			if (g > threshold) count++;
+			System.out.println(g);
 		}
 		System.out.println(maxGrade);
-		return maxGrade > threshold;
+		return maxGrade > threshold && threshold >= 3;
 	}
 	
 	/**
@@ -457,17 +464,23 @@ public class Util {
 	 *  返回 text 的评分
 	 */
 	
-	public static double grade(String text) throws IOException, ParseException {
-		String line = text.replaceAll("\n", " ").replaceAll("\r", " ").replaceAll("]", " ");
-		System.out.println(line);
-		QueryParser parser = new QueryParser(luceneVersion, "_@_#_", smartcn);
-		Query query = parser.parse(line);
-		String[] tokens = query.toString().split("\\+_@_#_:");
-		double sum = 0;
-		for (String token: tokens) {
-			sum += tokenGrade(token);
+	public static double grade(String origText) throws IOException, ParseException {
+		String text = origText.substring(0, Math.min(origText.length(), 2500));
+		Analyzer smartcn = new SmartChineseAnalyzer(luceneVersion);
+		TokenStream stream = smartcn.tokenStream("TOKEN", new StringReader(text));
+		CharTermAttribute token = stream.addAttribute(CharTermAttribute.class);
+		ArrayList<String> tokenList = new ArrayList<>(); 
+		
+		while (stream.incrementToken()) {
+			tokenList.add(token.toString());
 		}
-		return sum / Math.sqrt(line.length());
+		
+		double sum = 0;
+		for (String t: tokenList) {
+			sum += tokenGrade(t);
+		}
+		
+		return sum / Math.sqrt(text.length());
 	}
 	
 	/**
@@ -479,6 +492,7 @@ public class Util {
 		IndexReader reader = getIndexReader();
 		IndexSearcher searcher = new IndexSearcher(reader);
 		int numDocs = reader.numDocs();
+		Analyzer smartcn = new SmartChineseAnalyzer(luceneVersion);
 		QueryParser parser = new MultiFieldQueryParser(luceneVersion, fields, smartcn);
 		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
 		Query query = parser.parse(token);
@@ -487,7 +501,12 @@ public class Util {
 	}
 	
 	public static double compute(double rate) {
-		return Math.sin(Math.PI * Math.sqrt(rate)) * 2;
+		double peak = 0.2;
+		if (rate <= peak) {
+			return Math.sqrt(rate / peak);
+		} else {
+			return 1.0 - Math.sqrt((rate - peak) / (1 - peak));
+		}
 	}
 	
 	/**

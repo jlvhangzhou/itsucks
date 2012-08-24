@@ -36,9 +36,8 @@ public class ChinapubBuildIndex {
 //		}
 //		writer.close();
 		
-		IndexReader reader = IndexReader.open(dir);
+		IndexReader reader = Util.getIndexReader();
 		String[] fields = {"url", "title", "abstract", "content"};
-		Occur[] occurs = { Occur.SHOULD, Occur.SHOULD, Occur.SHOULD, Occur.SHOULD };
 		
 		
 		MultiFieldQueryParser parser = 
@@ -46,7 +45,7 @@ public class ChinapubBuildIndex {
 		
 		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
 		
-		Query query = parser.parse("java AND c++");
+		Query query = parser.parse("算法");
 //		Query query = parser.parse(Version.LUCENE_40, "java c++", fields, occurs, new SmartChineseAnalyzer(Version.LUCENE_40));
 		
 		
@@ -54,6 +53,7 @@ public class ChinapubBuildIndex {
 		
 		TopDocs hits = searcher.search(query, Integer.MAX_VALUE);
 		System.out.println(hits.totalHits);
+		double rate = (double) hits.totalHits / reader.numDocs();
 //		for (ScoreDoc doc: hits.scoreDocs) {
 //			System.out.println(doc.toString());
 //		}
@@ -64,7 +64,7 @@ public class ChinapubBuildIndex {
 //		System.out.println(reader.docFreq(new Term("content", "java c")));
 //		System.out.println(reader.numDocs());
 //		System.out.println(Math.sin(Math.PI * Math.sqrt((double)reader.docFreq(new Term("content", "java c")) / reader.numDocs()) ) * 2);
-		System.out.println(Math.sin(Math.PI * Math.sqrt((double)hits.totalHits / reader.numDocs()) ) * 2);
+		System.out.println(Util.compute(rate));
 		
 		
 		

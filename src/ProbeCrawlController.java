@@ -35,9 +35,13 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 public class ProbeCrawlController {
 	
+	public static final int maxPagesToFetch = 30;
+	public static int totalFetchPages;
+	public static String site;
+	public static ArrayList<String> texts;
+	
 	public static void main(String[] args) throws Exception {
 		
-		int maxPagesToFetch = 30;
 		CrawlConfig config = Util.getGlobalCrawlCongig(maxPagesToFetch);
 		
 		PageFetcher pageFetcher = new PageFetcher(config);
@@ -45,31 +49,22 @@ public class ProbeCrawlController {
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 		CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
 		
-		/*
-		 *  以下两行不可遗漏
-		 */
-//		String site = Util.URLCrawlFormat(args[0]);
-//		String seed = Util.URLCrawlFormat(args[1]);
-		String site = "http://www.cppblog.com/vczh";
-		String seed = "http://www.cppblog.com/vczh";
+		totalFetchPages = 0;
+		texts = new ArrayList<String>();
+		site = Util.URLCrawlFormat(args[0]);
 		
-		
-		ProbeCrawler.texts = new ArrayList<String>();
-		ProbeCrawler.totalFetchPages = 0;
-		ProbeCrawler.site = site;
-		
-		controller.addSeed(seed);
+		controller.addSeed(site);
 		controller.start(ProbeCrawler.class, Util.numberOfCrawlers);
 		
 		JedisPool pool = new JedisPool(Util.MasterHost);
 		Jedis jedis = pool.getResource();
 		
-		if (ProbeCrawler.texts.size() < maxPagesToFetch / 2) {
+		if (texts.size() < maxPagesToFetch / 2 || totalFetchPages < maxPagesToFetch * 2 / 3) {
 			if (Util.URLDBFormat(Util.getRoot(site)) != Util.URLDBFormat(site)) {
 				jedis.sadd(Util.applydb, Util.URLDBFormat(Util.getRoot(site)));
 			}
 		} else {
-			if (Util.isQualifiedITblog(ProbeCrawler.texts))
+			if (Util.isQualifiedITblog(texts))
 				jedis.sadd(Util.interviewdb, Util.URLDBFormat(site));
 		}
 		

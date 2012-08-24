@@ -20,9 +20,6 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 
-import java.nio.file.Files;
-import java.util.ArrayList;
-
 /**
  *  @author Wu Hualiang <wizawu@gmail.com>
  *  爬取指定网站若干个页面
@@ -30,12 +27,8 @@ import java.util.ArrayList;
 
 public class ProbeCrawler extends WebCrawler {
 	
-	public static int totalFetchPages;
-	public static String site;
-	public static ArrayList<String> texts;
-	
 	public boolean shouldVisit(WebURL url) {
-		return Util.shouldVisit(url, site);
+		return Util.shouldVisit(url, ProbeCrawlController.site);
 	}
 
 	@Override
@@ -44,10 +37,10 @@ public class ProbeCrawler extends WebCrawler {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			String text = Util.getMainBody(htmlParseData.getText());
 			if (text == null) return;
-			totalFetchPages++;
-			if (totalFetchPages % 2 == 1) {
-				texts.add(text);
+			if (ProbeCrawlController.totalFetchPages < ProbeCrawlController.maxPagesToFetch / 2) {
+				ProbeCrawlController.texts.add(text);
 			}
+			ProbeCrawlController.totalFetchPages++;
 		} 
 	}
 }

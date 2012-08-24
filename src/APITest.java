@@ -10,11 +10,24 @@ import redis.clients.jedis.*;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.pool.impl.GenericObjectPool.Config;
 import org.apache.http.HttpEntity;
+import org.apache.james.mime4j.field.address.Token;
+import org.apache.lucene.analysis.Token.TokenAttributeFactory;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
+import org.apache.lucene.analysis.cn.smart.SmartChineseSentenceTokenizerFactory;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.apache.lucene.analysis.tokenattributes.TermToBytesRefAttribute;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.parser.html.HtmlParser;
 import org.w3c.dom.Attr;
@@ -44,7 +57,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 
 public class APITest {
 
-	public static void main(String[] args) throws ParseException, UnsupportedEncodingException {
+	public static void main(String[] args) throws ParseException, IOException {
 //		String str = new String("刘翔加油");
 //		str = new String(str.getBytes("UTF-8"), "UTF-8");
 //		System.out.println(str);
@@ -180,20 +193,36 @@ public class APITest {
 //		String[] arg = { site, seed };
 //		BlogCrawlController.main(arg);
 		
-		String str = "我们都喜欢Java，但是不喜欢C++，因为后者很恶心XML的���则表";
-		str = new String(str.getBytes("UTF-16"), "UTF-16");
-		System.out.println(str);
-		
+		String str = "我们都喜欢Java，但是\n不\t\t\t喜欢C++，因为后者很恶心XML的���则表";
+//		System.out.println(SmartChineseSentenceTokenizerFactory.availableTokenizers().size());
+//		str = str.replaceAll("\\s+", ",");
+//		str = new String(str.getBytes("UTF-16"), "UTF-16");
+//		System.out.println(str);
+//		
+//		QueryParser parser = 
+//				new QueryParser(Version.LUCENE_40, "TOKEN", new SmartChineseAnalyzer(Version.LUCENE_40));
+//		
 		QueryParser parser = 
-				new QueryParser(Version.LUCENE_40, "_@_#_", new SmartChineseAnalyzer(Version.LUCENE_40));
-		
+				new QueryParser(Version.LUCENE_40, "TOKEN", new StandardAnalyzer(Version.LUCENE_40));
+//		
 		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
 		
-		Query query = parser.parse(str);
-//		System.out.println(query.toString());
-		for (String i: query.toString().split("\\+_@_#_:")) {
-			System.out.println(i);
+		Analyzer smartcn = new SmartChineseAnalyzer(Util.luceneVersion);
+		TokenStream stream = smartcn.tokenStream("TOKEN", new StringReader(str));
+//		TokenStream stream = new StandardAnalyzer(Util.luceneVersion).tokenStream("TOKEN", new StringReader(str));
+		CharTermAttribute t = stream.addAttribute(CharTermAttribute.class);
+		String line = "";
+		ArrayList<String> list = new ArrayList<>();
+		while (stream.incrementToken()) {
+			list.add(t.toString());
 		}
+		
+		for (String s: list) 
+			System.out.println(s+ " " + Util.tokenGrade(s));
+		
+//		IndexWriterConfig config = new IndexWriterConfig(Util.luceneVersion, Util.smartcn);
+//		IndexWriter writer = new IndexWriter(new MMapDirectory(new File(Util.blogIndexDir)), config);
+//		writer.close();
 		
 	}
 }
