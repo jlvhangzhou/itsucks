@@ -192,10 +192,6 @@ public class Util {
 			}
 		}
 		
-//		System.out.println("begin comment blog: " + beginOfCommentBlock);				// useless code
-//		System.out.println("end comment blog: " + endOfCommentBlock);					// useless code
-//		System.out.println("total lines: " + totalLines);								// useless code
-		
 		/*
 		 *  删除 Comment Block 包含的年份
 		 */
@@ -390,10 +386,10 @@ public class Util {
 	
 	public static boolean isOutLink(WebURL url, String site) {
 		String href = url.getURL().toLowerCase();
-		if ( href.contains(Util.URLDBFormat(site.toLowerCase())) ) return false;
+		String root = Util.URLDBFormat(Util.getRoot(site)).toLowerCase();
+		if (href.contains(root)) return false;
 		
-		String root = Util.getRoot(href);
-		String path = href.substring(root.length());
+		String path = href.substring(Util.getRoot(href).length());
 		
 		return !path.contains("#") && !path.contains("&") 
 				&& (!path.contains(".") || path.endsWith(".html") || path.endsWith(".htm")) 
@@ -461,9 +457,9 @@ public class Util {
 			double g = grade(t);
 			maxGrade = Math.max(maxGrade, g);
 			if (g > threshold) count++;
-//			System.out.println(g);				// useless code
 		}
-//		System.out.println(maxGrade);			// useless code
+		System.out.println("max score: " + maxGrade);
+		System.out.println("count: " + count);
 		return maxGrade > threshold && count >= 3;
 	}
 	
@@ -542,15 +538,5 @@ public class Util {
 		return new MultiReader(readers);
 	}
 	
-	/**
-	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  返回当前时间
-	 */
-	
-	public static String getTime() {
-		Date date = new Date(); 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		return format.format(date); 
-	}
 }
 

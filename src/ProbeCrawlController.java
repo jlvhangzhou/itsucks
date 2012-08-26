@@ -16,8 +16,6 @@
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -58,17 +56,25 @@ public class ProbeCrawlController {
 		
 		JedisPool pool = new JedisPool(Util.MasterHost);
 		Jedis jedis = pool.getResource();
+		site = Util.URLDBFormat(site);
 		
 		if (texts.size() < maxPagesToFetch / 2 || totalFetchPages < maxPagesToFetch * 2 / 3) {
-			jedis.sadd(Util.rejectdb, Util.URLDBFormat(site));
-			if (Util.URLDBFormat(Util.getRoot(site)) != Util.URLDBFormat(site)) {
-				jedis.sadd(Util.applydb, Util.URLDBFormat(Util.getRoot(site)));
+			jedis.sadd(Util.rejectdb, site);
+			System.out.println("add " + site + " to redis:" + Util.rejectdb);
+			
+			String root = Util.URLDBFormat(Util.getRoot(site)); 
+			if (root != site) {
+				jedis.sadd(Util.applydb, root);
+				System.out.println("add " + root + " to redis:" + Util.applydb);
 			}
 		} else {
-			if (Util.isQualifiedITblog(texts))
-				jedis.sadd(Util.interviewdb, Util.URLDBFormat(site));
-			else
-				jedis.sadd(Util.rejectdb, Util.URLDBFormat(site));
+			if (Util.isQualifiedITblog(texts)) {
+				jedis.sadd(Util.interviewdb, site);
+				System.out.println("add " + site + " to redis:" + Util.interviewdb);
+			} else {
+				jedis.sadd(Util.rejectdb, site);
+				System.out.println("add " + site + " to redis:" + Util.rejectdb);
+			}
 		}
 		
 		pool.returnResource(jedis);

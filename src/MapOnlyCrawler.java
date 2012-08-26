@@ -4,7 +4,6 @@
  */
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -26,6 +25,7 @@ public class MapOnlyCrawler {
 	
 	enum Result { SUCCESS, EXCEPTION }
 	public static final int MaxNumberOfURLs = 24;
+	public static final int MapSlotCapacity = 3;
 	public static final String inputDir = "input/";
 	public static Path[] inputFiles;
 	
@@ -38,25 +38,25 @@ public class MapOnlyCrawler {
 		
 		if (list.size() == 0) return;
 		
-		inputFiles = new Path[3];
-		for (Integer i = 1; i <= inputFiles.length; i++)
+		inputFiles = new Path[MapSlotCapacity];
+		for (Integer i = 1; i <= MapSlotCapacity; i++)
 			inputFiles[i-1] = new Path(inputDir + "/url_list_" + i.toString());
 		
 		Configuration conf = new Configuration();
 		FileSystem hdfs = FileSystem.get(conf);
-		FSDataOutputStream[] out = new FSDataOutputStream[inputFiles.length];
-		for (int i = 0; i < inputFiles.length; i++)
+		FSDataOutputStream[] out = new FSDataOutputStream[MapSlotCapacity];
+		for (int i = 0; i < MapSlotCapacity; i++)
 			out[i] = hdfs.create(inputFiles[i]);
 		
 		int count = 0;
 		for (String url: list) {
-			int i = count % inputFiles.length;
+			int i = count % MapSlotCapacity;
 			out[i].write((url + "\n").getBytes());
 			count++;
 			if (count == MaxNumberOfURLs) break;
 		}
 		
-		for (int i = 0; i < inputFiles.length; i++)
+		for (int i = 0; i < MapSlotCapacity; i++)
 			out[i].close();
 	}
 	
@@ -64,14 +64,7 @@ public class MapOnlyCrawler {
 		public void map(LongWritable key, Text value, Context context) {
 			String[] args = { value.toString(), value.toString() };
 			try {
-//				BlogCrawlController.main(args);
-				
-				JedisPool pool = new JedisPool(Util.MasterHost);
-				Jedis jedis = pool.getResource();
-				jedis.sadd("test", value.toString());
-				pool.returnBrokenResource(jedis);
-				pool.destroy();
-				
+				BlogCrawlController.main(args);
 				context.getCounter(Result.SUCCESS).increment(1);
 			} catch (Exception e) {
 				e.printStackTrace();

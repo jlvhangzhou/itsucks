@@ -27,6 +27,7 @@ import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import edu.uci.ics.crawler4j.url.WebURL;
 
 /**
  *  @author Wu Hualiang <wizawu@gmail.com>
@@ -37,8 +38,11 @@ public class BlogCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
-		String site = Util.URLCrawlFormat(args[0]);
-		String seed = Util.URLCrawlFormat(args[1]);
+//		String site = Util.URLCrawlFormat(args[0]);
+//		String seed = Util.URLCrawlFormat(args[1]);
+		
+		String site = Util.URLCrawlFormat("blog.yufeng.info");
+		String seed = Util.URLCrawlFormat("blog.yufeng.info");
 		
 		JedisPool pool = new JedisPool("localhost");
 		Jedis jedis = pool.getResource();
@@ -77,6 +81,9 @@ public class BlogCrawlController {
 				 *  爬虫数据持久化
 				 */
 				System.out.println(x.url + "\n" + x.score);
+				for (WebURL u: x.parser.getOutgoingUrls())
+					if (Util.isOutLink(u, site))
+						System.out.println(u.getURL().toString());
 			}
 		}
 	}

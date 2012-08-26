@@ -81,8 +81,6 @@ public class BlogCrawler extends WebCrawler {
 				CRC32_html.get(key).set(url, htmlParseData, score);
 				scores.add(score);
 			}
-			
-//			System.out.println(url + '\n' + CRC32_html.get(key).score);					// useless code
 		} 
 	}
 }
