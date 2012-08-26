@@ -1,5 +1,6 @@
 import java.io.*;
 import java.nio.Buffer;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.*;
 
@@ -193,36 +194,27 @@ public class APITest {
 //		String[] arg = { site, seed };
 //		BlogCrawlController.main(arg);
 		
-		String str = "我们都喜欢Java，但是\n不\t\t\t喜欢C++，因为后者很恶心XML的���则表";
-//		System.out.println(SmartChineseSentenceTokenizerFactory.availableTokenizers().size());
-//		str = str.replaceAll("\\s+", ",");
-//		str = new String(str.getBytes("UTF-16"), "UTF-16");
-//		System.out.println(str);
-//		
+//		String str = "我们都喜欢Java，但是\n不\t\t\t喜欢C++，因为后者很恶心XML的���则表";
 //		QueryParser parser = 
-//				new QueryParser(Version.LUCENE_40, "TOKEN", new SmartChineseAnalyzer(Version.LUCENE_40));
+//				new QueryParser(Version.LUCENE_40, "TOKEN", new StandardAnalyzer(Version.LUCENE_40));
+////		
+//		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
 //		
-		QueryParser parser = 
-				new QueryParser(Version.LUCENE_40, "TOKEN", new StandardAnalyzer(Version.LUCENE_40));
+//		Analyzer smartcn = new SmartChineseAnalyzer(Util.luceneVersion);
+//		TokenStream stream = smartcn.tokenStream("TOKEN", new StringReader(str));
+//		CharTermAttribute t = stream.addAttribute(CharTermAttribute.class);
+//		String line = "";
+//		ArrayList<String> list = new ArrayList<>();
+//		while (stream.incrementToken()) {
+//			list.add(t.toString());
+//		}
 //		
-		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
+//		for (String s: list) 
+//			System.out.println(s+ " " + Util.tokenGrade(s));
 		
-		Analyzer smartcn = new SmartChineseAnalyzer(Util.luceneVersion);
-		TokenStream stream = smartcn.tokenStream("TOKEN", new StringReader(str));
-//		TokenStream stream = new StandardAnalyzer(Util.luceneVersion).tokenStream("TOKEN", new StringReader(str));
-		CharTermAttribute t = stream.addAttribute(CharTermAttribute.class);
-		String line = "";
-		ArrayList<String> list = new ArrayList<>();
-		while (stream.incrementToken()) {
-			list.add(t.toString());
-		}
-		
-		for (String s: list) 
-			System.out.println(s+ " " + Util.tokenGrade(s));
-		
-//		IndexWriterConfig config = new IndexWriterConfig(Util.luceneVersion, Util.smartcn);
-//		IndexWriter writer = new IndexWriter(new MMapDirectory(new File(Util.blogIndexDir)), config);
-//		writer.close();
+		Date date=new Date(); 
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
+		System.out.println(df.format(date)); 
 		
 	}
 }

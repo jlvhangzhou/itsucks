@@ -21,7 +21,7 @@ public class SiteValidation {
 					jedis.sismember(Util.rejectdb, member) ) {
 				// pass
 			} else {
-				String[] crawlArgs = { member, member };
+				String[] crawlArgs = { member };
 				ProbeCrawlController.main(crawlArgs);
 			}
 			

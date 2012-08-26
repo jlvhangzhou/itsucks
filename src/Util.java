@@ -3,8 +3,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -352,6 +354,9 @@ public class Util {
 			 *  前 20% 数据默认合格
 			 */
 			if (i < length / 5) continue;
+			/*
+			 *  相邻数据的斜率不超过 5/3
+			 */
 			if (scores[i] > total/(i+1) * 5 / 3) {
 				fence = i;
 				break;
@@ -362,7 +367,7 @@ public class Util {
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  Crawler 用来判断URL是否访问
+	 *  (Crawler)用来判断URL是否访问
 	 */
 	
 	public static boolean shouldVisit(WebURL url, String site) {
@@ -380,7 +385,7 @@ public class Util {
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  Crawler 用来判断URL是否出链
+	 *  (Crawler)用来判断URL是否出链
 	 */
 	
 	public static boolean isOutLink(WebURL url, String site) {
@@ -399,7 +404,7 @@ public class Util {
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  返回 URL 的父路径
+	 *  返回URL的父路径
 	 */
 	
 	public static String getSecondRoot(String url) {
@@ -446,6 +451,9 @@ public class Util {
 	 */
 	
 	public static boolean isQualifiedITblog(ArrayList<String> texts) throws IOException, ParseException {
+		/*
+		 *  5 由实验所得
+		 */
 		double threshold = 5;
  		double maxGrade = 0;
 		int count = 0;
@@ -453,10 +461,10 @@ public class Util {
 			double g = grade(t);
 			maxGrade = Math.max(maxGrade, g);
 			if (g > threshold) count++;
-			System.out.println(g);
+//			System.out.println(g);				// useless code
 		}
-		System.out.println(maxGrade);
-		return maxGrade > threshold && threshold >= 3;
+//		System.out.println(maxGrade);			// useless code
+		return maxGrade > threshold && count >= 3;
 	}
 	
 	/**
@@ -501,6 +509,9 @@ public class Util {
 	}
 	
 	public static double compute(double rate) {
+		/*
+		 *  0.2 根据 Pareto Principle
+		 */
 		double peak = 0.2;
 		if (rate <= peak) {
 			return Math.sqrt(rate / peak);
@@ -529,6 +540,17 @@ public class Util {
 		}
 		
 		return new MultiReader(readers);
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  返回当前时间
+	 */
+	
+	public static String getTime() {
+		Date date = new Date(); 
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		return format.format(date); 
 	}
 }
 

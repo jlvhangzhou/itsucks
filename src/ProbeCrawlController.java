@@ -60,12 +60,15 @@ public class ProbeCrawlController {
 		Jedis jedis = pool.getResource();
 		
 		if (texts.size() < maxPagesToFetch / 2 || totalFetchPages < maxPagesToFetch * 2 / 3) {
+			jedis.sadd(Util.rejectdb, Util.URLDBFormat(site));
 			if (Util.URLDBFormat(Util.getRoot(site)) != Util.URLDBFormat(site)) {
 				jedis.sadd(Util.applydb, Util.URLDBFormat(Util.getRoot(site)));
 			}
 		} else {
 			if (Util.isQualifiedITblog(texts))
 				jedis.sadd(Util.interviewdb, Util.URLDBFormat(site));
+			else
+				jedis.sadd(Util.rejectdb, Util.URLDBFormat(site));
 		}
 		
 		pool.returnResource(jedis);

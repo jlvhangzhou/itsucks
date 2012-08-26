@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -34,6 +37,15 @@ public class BlogCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
+		String site = Util.URLCrawlFormat(args[0]);
+		String seed = Util.URLCrawlFormat(args[1]);
+		
+		JedisPool pool = new JedisPool("localhost");
+		Jedis jedis = pool.getResource();
+		if (jedis.sismember(Util.acceptdb, site) || jedis.sismember(Util.rejectdb, site)) return;
+		pool.returnBrokenResource(jedis);
+		pool.destroy();
+		
 		int maxPagesToFetch = 2000;
 		CrawlConfig config = Util.getGlobalCrawlCongig(maxPagesToFetch);
 		
@@ -41,12 +53,6 @@ public class BlogCrawlController {
 		RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
 		RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 		CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
-		
-		/*
-		 *  以下两行不可遗漏
-		 */
-		String site = Util.URLCrawlFormat(args[0]);
-		String seed = Util.URLCrawlFormat(args[1]);
 		
 		BlogCrawler.scores = new ArrayList<Double>();
 		BlogCrawler.CRC32_html = new HashMap<>();
