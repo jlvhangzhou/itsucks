@@ -447,9 +447,6 @@ public class Util {
 	 */
 	
 	public static boolean isQualifiedITblog(ArrayList<String> texts) throws IOException, ParseException {
-		/*
-		 *  5 由实验所得
-		 */
 		double threshold = 5;
  		double maxGrade = 0;
 		int count = 0;
@@ -506,7 +503,7 @@ public class Util {
 	
 	public static double compute(double rate) {
 		/*
-		 *  0.2 根据 Pareto Principle
+		 *  Pareto Principle
 		 */
 		double peak = 0.2;
 		if (rate <= peak) {

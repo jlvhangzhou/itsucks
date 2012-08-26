@@ -38,11 +38,8 @@ public class BlogCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
-//		String site = Util.URLCrawlFormat(args[0]);
-//		String seed = Util.URLCrawlFormat(args[1]);
-		
-		String site = Util.URLCrawlFormat("blog.yufeng.info");
-		String seed = Util.URLCrawlFormat("blog.yufeng.info");
+		String site = Util.URLCrawlFormat(args[0]);
+		String seed = Util.URLCrawlFormat(args[1]);
 		
 		JedisPool pool = new JedisPool("localhost");
 		Jedis jedis = pool.getResource();
@@ -65,6 +62,9 @@ public class BlogCrawlController {
 		controller.addSeed(seed);
 		controller.start(BlogCrawler.class, Util.numberOfCrawlers);
 		
+		/*
+		 *  计算list页面和post页面的临界值
+		 */
 		double[] scores = new double[BlogCrawler.scores.size()];
 		int i = 0;
 		for (double s: BlogCrawler.scores) {
@@ -73,6 +73,12 @@ public class BlogCrawlController {
 		}
 		double threshold = Util.getThreshold(scores);
 		
+		/*
+		 *  连接数据库
+		 */
+		pool = new JedisPool(Util.MasterHost);
+		jedis = pool.getResource();
+		
 		Set<Long> keys = BlogCrawler.CRC32_html.keySet();
 		for (Long key: keys) {
 			MyHtmlClass x = BlogCrawler.CRC32_html.get(key); 
@@ -80,10 +86,11 @@ public class BlogCrawlController {
 				/*
 				 *  爬虫数据持久化
 				 */
-				System.out.println(x.url + "\n" + x.score);
-				for (WebURL u: x.parser.getOutgoingUrls())
+				for (WebURL u: x.parser.getOutgoingUrls()) {
 					if (Util.isOutLink(u, site))
-						System.out.println(u.getURL().toString());
+						jedis.sadd(Util.applydb, u.getURL().toString());
+				}
+						
 			}
 		}
 	}
