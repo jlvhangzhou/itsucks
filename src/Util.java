@@ -509,7 +509,12 @@ public class Util {
 		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
 		Query query = parser.parse(token);
 		TopDocs hits = searcher.search(query, numDocs);
-		return compute( (double)(hits.totalHits) / numDocs );
+		double totalHits = hits.totalHits;
+		/*
+		 *  reader必须关闭
+		 */
+		reader.close();
+		return compute(totalHits / numDocs);
 	}
 	
 	public static double compute(double rate) {
