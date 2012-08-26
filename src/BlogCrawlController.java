@@ -19,6 +19,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -76,9 +83,19 @@ public class BlogCrawlController {
 		/*
 		 *  连接数据库
 		 */
+		site = Util.URLDBFormat(site);
+		
 		pool = new JedisPool(Util.MasterHost);
 		jedis = pool.getResource();
 		
+		Configuration conf = HBaseConfiguration.create();
+		HTable table = new HTable(conf, "blog");
+		table.setAutoFlush(false);
+		Put put = new Put(site.getBytes());
+		Get get = new Get(site.getBytes());
+		get.addFamily("cf".getBytes());
+		Result result = table.get(get);
+
 		Set<Long> keys = BlogCrawler.CRC32_html.keySet();
 		for (Long key: keys) {
 			MyHtmlClass x = BlogCrawler.CRC32_html.get(key); 
@@ -87,10 +104,20 @@ public class BlogCrawlController {
 				 *  爬虫数据持久化
 				 */
 				for (WebURL u: x.parser.getOutgoingUrls()) {
-					if (Util.isOutLink(u, site))
-						jedis.sadd(Util.applydb, u.getURL().toString());
+					if (Util.isOutLink(u, site)) {
+						String link = u.getURL().toString();
+						if (Util.getSecondRoot(link) == null) 
+							link = Util.getRoot(link);
+						else link = Util.getSecondRoot(link);
+						jedis.sadd(Util.applydb, Util.URLDBFormat(link));
+					}
 				}
-						
+				
+				String path = Util.getPath(x.url, site);
+				if (!result.containsColumn("cf".getBytes(), path.getBytes())) {
+					put.add("cf".getBytes(), path.getBytes(), x.parser.getText().getBytes());
+				}
+				
 			}
 		}
 		
@@ -99,5 +126,8 @@ public class BlogCrawlController {
 		 */
 		pool.returnBrokenResource(jedis);
 		pool.destroy();
+		
+		table.put(put);
+		table.flushCommits();
 	}
 }

@@ -3,10 +3,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -425,6 +423,19 @@ public class Util {
 			ret = ret.substring(0, ret.length() - 1);
 		}
 		return protocol + ret;
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  返回URL的路径
+	 */
+	
+	public static String getPath(String url, String site) {
+		String path = URLDBFormat(url);
+		String root = URLDBFormat(site);
+		if (!path.contains(root)) return null;
+		if (path.equalsIgnoreCase(root)) return "/";
+		else return path.substring(root.length());
 	}
 	
 	/**
