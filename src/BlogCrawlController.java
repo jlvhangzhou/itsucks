@@ -93,5 +93,11 @@ public class BlogCrawlController {
 						
 			}
 		}
+		
+		/*
+		 *  断开数据库连接
+		 */
+		pool.returnBrokenResource(jedis);
+		pool.destroy();
 	}
 }
