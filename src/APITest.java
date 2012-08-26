@@ -212,7 +212,8 @@ public class APITest {
 //		for (String s: list) 
 //			System.out.println(s+ " " + Util.tokenGrade(s));
 		
-		Date date=new Date(); 
+		Date date=new Date();
+		System.out.println(date.getTime());
 		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); 
 		System.out.println(df.format(date)); 
 		
