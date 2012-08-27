@@ -54,6 +54,7 @@ public class Util {
 	public static final String interviewdb = "interview";
 	public static final String acceptdb = "accept";
 	public static final String rejectdb = "reject";
+	public static final String tsdb = "ts";
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
@@ -125,6 +126,19 @@ public class Util {
 		 *  转换成 UTF-8 编码
 		 */
 		return toUTF8String(result);
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  从html中提取网页标题
+	 */
+	
+	public static String getTitle(String orig_html) {
+		String html = orig_html.toLowerCase();
+		int begin = html.indexOf("<title>") + "<title>".length();
+		int end = html.indexOf("</title>");
+		String title = orig_html.substring(begin, end).trim();
+		return title;
 	}
 	
 	/**

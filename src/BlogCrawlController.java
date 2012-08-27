@@ -16,6 +16,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -45,8 +46,9 @@ public class BlogCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
-		String site = Util.URLCrawlFormat(args[0]);
-		String seed = Util.URLCrawlFormat(args[1]);
+		String[] ars = { "blog.yufeng.info", "blog.yufeng.info" };
+		String site = Util.URLCrawlFormat(ars[0]);
+		String seed = Util.URLCrawlFormat(ars[1]);
 		
 		JedisPool pool = new JedisPool("localhost");
 		Jedis jedis = pool.getResource();
@@ -85,9 +87,6 @@ public class BlogCrawlController {
 		 */
 		site = Util.URLDBFormat(site);
 		
-		pool = new JedisPool(Util.MasterHost);
-		jedis = pool.getResource();
-		
 		Configuration conf = HBaseConfiguration.create();
 		HTable table = new HTable(conf, "blog");
 		table.setAutoFlush(false);
@@ -95,7 +94,12 @@ public class BlogCrawlController {
 		Get get = new Get(site.getBytes());
 		get.addFamily("cf".getBytes());
 		Result result = table.get(get);
+		Long ts = new Date().getTime() / 1000;
 
+		pool = new JedisPool(Util.MasterHost);
+		jedis = pool.getResource();
+		jedis.sadd(Util.tsdb, ts.toString());
+		
 		Set<Long> keys = BlogCrawler.CRC32_html.keySet();
 		for (Long key: keys) {
 			MyHtmlClass x = BlogCrawler.CRC32_html.get(key); 
@@ -114,20 +118,19 @@ public class BlogCrawlController {
 				}
 				
 				String path = Util.getPath(x.url, site);
+				if (path == null) continue;
 				if (!result.containsColumn("cf".getBytes(), path.getBytes())) {
-					put.add("cf".getBytes(), path.getBytes(), x.parser.getText().getBytes());
+					put.add("cf".getBytes(), path.getBytes(), ts, x.parser.getHtml().getBytes());
 				}
-				
 			}
 		}
 		
 		/*
 		 *  断开数据库连接
 		 */
-		pool.returnBrokenResource(jedis);
-		pool.destroy();
-		
 		table.put(put);
 		table.flushCommits();
+		pool.returnBrokenResource(jedis);
+		pool.destroy();
 	}
 }
