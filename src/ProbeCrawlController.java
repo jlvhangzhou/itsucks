@@ -63,7 +63,7 @@ public class ProbeCrawlController {
 			System.out.println("add " + site + " to redis:" + Util.rejectdb);
 			
 			String root = Util.URLDBFormat(Util.getRoot(site)); 
-			if (root != site) {
+			if (!root.equals(site)) {
 				jedis.sadd(Util.applydb, root);
 				System.out.println("add " + root + " to redis:" + Util.applydb);
 			}

@@ -5,6 +5,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.zip.CRC32;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -43,6 +44,7 @@ public class Util {
 	 */
 	
 	public static final String[] fields = {"site", "title", "abstract", "content"};
+	public static final String id_field = "id";
 	public static final Version luceneVersion = Version.LUCENE_40; 
 	
 	/** 
@@ -87,19 +89,24 @@ public class Util {
 	 *  从parse后的网页纯文本提取正文内容
 	 */
 	
-	public static final int minStart = 15;
+	public static final int minStart = 5;
 	public static final int blockThickness = 3;
 	public static final int minChars = 90;
 	
 	public static String getMainBody(String text) {
+//		int bodyIndex = Math.max(html.toLowerCase().indexOf("<body"), 0);
+//		String text = html.substring(bodyIndex);
+//		text = fliterTag(text);
 		
-		String[] lines = text.split("[\n\r]+");
+		String[] lines = text.split("\n");
 		int totalLines = lines.length;
 		int[] lineLength = new int[totalLines];
-		for (int i = 0; i < totalLines; i++)
+		for (int i = 0; i < totalLines; i++) {
+			lines[i] = lines[i].replaceAll("\\s+", " ").trim();
 			lineLength[i] = lines[i].length();
+		}
 
-		if (totalLines - blockThickness < 0) return null;
+		if (totalLines <= blockThickness) return null;
 		
 		int[] blockLength = new int[totalLines - blockThickness + 1];
 		for (int i = 0; i < blockLength.length; i++) {
@@ -110,19 +117,30 @@ public class Util {
 			blockLength[i] = sum;
 		}
 		
-		if (minStart + 1 >= blockLength.length) return null; 
+		if (minStart + blockThickness >= totalLines) return null;
 		
 		int start = minStart, end = totalLines;
+		int maxBlockLength = 0, count = 0;
+		
 		for (int i = start; i < blockLength.length - 1; i++) {
 			if (blockLength[i] < minChars) continue;
 			if (blockLength[i + 1] == 0) continue;
-			start = i;
-			for (int j = i; j < blockLength.length; j++)
+			
+			int sum = 0;
+			for (int j = i; j < blockLength.length; j++) {
 				if (blockLength[j] == 0) {
-					end = j;
+					if (sum > maxBlockLength * 3) { 
+						start = i;
+						end = j;
+						maxBlockLength = sum;
+						count++;
+					}
 					break;
+				} else {
+					sum += lineLength[i];
 				}
-			break;
+			}
+			if (count == 3) break;
 		}
 
 		String result = lines[start] + "\n";
@@ -174,7 +192,7 @@ public class Util {
 	
 	public static double isPost(String origHtml) {
 			
-		int bodyIndex = Math.max(origHtml.indexOf("<body>"), 0);
+		int bodyIndex = Math.max(origHtml.toLowerCase().indexOf("<body>"), 0);
 		String body = origHtml.substring(bodyIndex);
 		String[] lines = body.split("\n");
 		int totalLines = lines.length;
@@ -329,7 +347,8 @@ public class Util {
 	
 	public static String fliterTag(String html) {
 		String result = html.replaceAll("<script[^>]*>.*</script>", "");
-		result = result.replaceAll("<[^>]*>", "");
+		result = result.replaceAll("<!--.*-->", "");
+		result = result.replaceAll("<[^>\n]*>", "");
 		return result;
 	}
 	
@@ -585,5 +604,19 @@ public class Util {
 		return new MultiReader(readers);
 	}
 	
+	/** 
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  生成 Lucene ID
+	 */
+	
+	public static String getLuceneID(String site, String title) {
+		Long a, b;
+		CRC32 crc32 = new CRC32();
+		crc32.update(site.getBytes());
+		a = crc32.getValue();
+		crc32.update(title.getBytes());
+		b = crc32.getValue();
+		return a.toString() + b.toString();
+	}
 }
 

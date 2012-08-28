@@ -24,7 +24,7 @@ import redis.clients.jedis.JedisPool;
 public class MapOnlyCrawler {
 	
 	enum Result { SUCCESS, EXCEPTION }
-	public static final int MaxNumberOfURLs = 24;
+	public static int MaxNumberOfURLs = 24;
 	public static final int MapSlotCapacity = 3;
 	public static final String inputDir = "input/";
 	public static Path[] inputFiles;
@@ -74,6 +74,10 @@ public class MapOnlyCrawler {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		if (args.length == 1) {
+			MaxNumberOfURLs = new Integer(args[0]);
+			System.out.println("number of sites: " + MaxNumberOfURLs);
+		}
 		getInputReady();
 
 		Configuration conf = new Configuration();
