@@ -56,6 +56,13 @@ public class Util {
 	public static final String rejectdb = "reject";
 	public static final String tsdb = "ts";
 	
+	/** 
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  定义 HTable 数据库名称
+	 */
+	
+	public static final String blogHT = "blog";
+	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  定义爬虫参数
@@ -130,13 +137,13 @@ public class Util {
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  从文本中提取摘要
+	 *  从 getMainBody 得到的正文中提取摘要
 	 */
 	
 	public static final int lengthOfAbstract = 115;
 	
-	public static String getAbstract(String orig_text) {
-		String text = getMainBody(orig_text);
+	public static String getAbstract(String text) {
+		if (text == null) return null;
 		text = removeEmptyLines(text);
 		text = text.replaceAll("\\s+", " ").trim();
 		int length = text.length();
@@ -256,6 +263,7 @@ public class Util {
 			/*
 			 *  不统计局部出现的大量年份
 			 */
+			if (i + 2 >= lines.length) break;
 			if (numberOfYears[i-2] + numberOfYears[i-1] + numberOfYears[i] >= 3) continue;
 			if (numberOfYears[i+1] + numberOfYears[i-1] + numberOfYears[i] >= 3) continue;
 			if (numberOfYears[i+2] + numberOfYears[i+1] + numberOfYears[i] >= 3) continue;

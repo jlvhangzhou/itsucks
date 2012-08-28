@@ -66,6 +66,7 @@ public class BlogCrawler extends WebCrawler {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 			
 			String title = htmlParseData.getTitle();
+			if (title == null) return;
 			CRC32 crc32 = new CRC32();
 			crc32.update(title.getBytes());
 			Long key = crc32.getValue();

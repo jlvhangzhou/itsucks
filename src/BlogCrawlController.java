@@ -56,7 +56,7 @@ public class BlogCrawlController {
 		pool.returnBrokenResource(jedis);
 		pool.destroy();
 		
-		int maxPagesToFetch = 2000;
+		int maxPagesToFetch = 1600;
 		CrawlConfig config = Util.getGlobalCrawlCongig(maxPagesToFetch);
 		
 		PageFetcher pageFetcher = new PageFetcher(config);
@@ -72,8 +72,24 @@ public class BlogCrawlController {
 		controller.start(BlogCrawler.class, Util.numberOfCrawlers);
 		
 		/*
-		 *  计算list页面和post页面的临界值
+		 *  连接数据库
 		 */
+		site = Util.URLDBFormat(site);
+		
+		pool = new JedisPool(Util.MasterHost);
+		jedis = pool.getResource();
+		
+		/*
+		 *  网站异常
+		 */
+		if (BlogCrawler.scores.size() < 10) {
+			jedis.srem(Util.interviewdb, site);
+			jedis.sadd(Util.applydb, site);
+			pool.returnResource(jedis);
+			pool.destroy();
+			return;
+		}
+		
 		double[] scores = new double[BlogCrawler.scores.size()];
 		int i = 0;
 		for (double s: BlogCrawler.scores) {
@@ -82,22 +98,14 @@ public class BlogCrawlController {
 		}
 		double threshold = Util.getThreshold(scores);
 		
-		/*
-		 *  连接数据库
-		 */
-		site = Util.URLDBFormat(site);
-		
 		Configuration conf = HBaseConfiguration.create();
-		HTable table = new HTable(conf, "blog");
+		HTable table = new HTable(conf, Util.blogHT);
 		table.setAutoFlush(false);
 		Put put = new Put(site.getBytes());
 		Get get = new Get(site.getBytes());
 		get.addFamily("cf".getBytes());
 		Result result = table.get(get);
 		Long ts = new Date().getTime() / 1000;
-
-		pool = new JedisPool(Util.MasterHost);
-		jedis = pool.getResource();
 		jedis.sadd(Util.tsdb, ts.toString());
 		
 		Set<Long> keys = BlogCrawler.CRC32_html.keySet();
