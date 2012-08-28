@@ -80,9 +80,9 @@ public class Util {
 	 *  从parse后的网页纯文本提取正文内容
 	 */
 	
-	public static final int minStart = 10;
+	public static final int minStart = 15;
 	public static final int blockThickness = 3;
-	public static final int minChars = 80;
+	public static final int minChars = 90;
 	
 	public static String getMainBody(String text) {
 		
@@ -126,6 +126,21 @@ public class Util {
 		 *  转换成 UTF-8 编码
 		 */
 		return toUTF8String(result);
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  从文本中提取摘要
+	 */
+	
+	public static final int lengthOfAbstract = 115;
+	
+	public static String getAbstract(String orig_text) {
+		String text = getMainBody(orig_text);
+		text = removeEmptyLines(text);
+		text = text.replaceAll("\\s+", " ").trim();
+		int length = text.length();
+		return text.substring(0, Math.min(length, lengthOfAbstract));
 	}
 	
 	/**
@@ -305,7 +320,7 @@ public class Util {
 	 */
 	
 	public static String fliterTag(String html) {
-		String result = html.replaceAll("<script[^>]*>[^<]*</script>", "");
+		String result = html.replaceAll("<script[^>]*>.*</script>", "");
 		result = result.replaceAll("<[^>]*>", "");
 		return result;
 	}
@@ -532,9 +547,6 @@ public class Util {
 	}
 	
 	public static double compute(double rate) {
-		/*
-		 *  Pareto Principle
-		 */
 		double peak = 0.2;
 		if (rate <= peak) {
 			return Math.sqrt(rate / peak);

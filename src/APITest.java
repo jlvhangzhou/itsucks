@@ -1,7 +1,12 @@
 import java.awt.List;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -18,6 +23,8 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
@@ -27,7 +34,6 @@ import org.apache.hadoop.hbase.filter.TimestampsFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -41,12 +47,17 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 
+import edu.uci.ics.crawler4j.parser.HtmlParseData;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 
 public class APITest {
 
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args) throws IOException, ParseException, SAXException {
 		
 		Configuration conf = HBaseConfiguration.create();
+		
 //		HBaseAdmin admin = new HBaseAdmin(conf);
 //		HTableDescriptor desc = new HTableDescriptor("dota");
 //		HColumnDescriptor cdesc = new HColumnDescriptor("cf");
@@ -80,7 +91,11 @@ public class APITest {
 			if (res == null) break;
 			for (KeyValue key: res.list()) {
 				count++;
-				System.out.println(Util.getTitle(new String(key.getValue())));
+				String text = new String(key.getValue());
+				System.out.println(new String(key.getRow()) + new String(key.getQualifier()));
+				System.out.println(Util.getTitle(text));
+				System.out.println(Util.getAbstract(text));
+				System.out.println("===");
 			}
 		}
 		System.out.println(count);

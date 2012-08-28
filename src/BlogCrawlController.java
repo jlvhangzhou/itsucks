@@ -46,9 +46,9 @@ public class BlogCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
-		String[] ars = { "blog.yufeng.info", "blog.yufeng.info" };
-		String site = Util.URLCrawlFormat(ars[0]);
-		String seed = Util.URLCrawlFormat(ars[1]);
+//		String[] ars = { "blog.yufeng.info", "blog.yufeng.info" };
+		String site = Util.URLCrawlFormat(args[0]);
+		String seed = Util.URLCrawlFormat(args[1]);
 		
 		JedisPool pool = new JedisPool("localhost");
 		Jedis jedis = pool.getResource();
@@ -120,10 +120,14 @@ public class BlogCrawlController {
 				String path = Util.getPath(x.url, site);
 				if (path == null) continue;
 				if (!result.containsColumn("cf".getBytes(), path.getBytes())) {
-					put.add("cf".getBytes(), path.getBytes(), ts, x.parser.getHtml().getBytes());
+					String value = "<title>" + x.parser.getTitle() + "</title>\n\n\n" + x.parser.getText(); 
+					put.add("cf".getBytes(), path.getBytes(), ts, value.getBytes());
 				}
 			}
 		}
+		
+		jedis.srem(Util.interviewdb, site);
+		jedis.sadd(Util.acceptdb, site);
 		
 		/*
 		 *  断开数据库连接
