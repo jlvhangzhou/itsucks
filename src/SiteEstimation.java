@@ -27,7 +27,7 @@ public class SiteEstimation {
 			}
 			
 			jedis.srem(Util.applydb, member);
-			System.out.println("remove " + member + " from redis:" + Util.applydb);
+			System.out.println("remove " + member + " from redis:" + Util.applydb + "\n");
 		}
 		
 		pool.returnResource(jedis);

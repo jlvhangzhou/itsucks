@@ -117,12 +117,12 @@ public class APITest {
 //		writer.commit();
 //		writer.close();
 		
-		IndexReader reader = Util.getIndexReader();
+		IndexReader reader = Util.getIndexReader(null);
 		IndexSearcher searcher = new IndexSearcher(reader);
 		Analyzer smartcn = new SmartChineseAnalyzer(Util.luceneVersion);
 		QueryParser parser = new MultiFieldQueryParser(Util.luceneVersion, Util.fields, smartcn);
 		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = parser.parse("yufeng");
+		Query query = parser.parse("mysql");
 		TopDocs hits = searcher.search(query, 1000);
 		System.out.println(hits.totalHits);
 		

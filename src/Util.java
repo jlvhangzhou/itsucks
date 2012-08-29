@@ -88,6 +88,7 @@ public class Util {
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  从html提取正文内容
+	 *  算法参考 code.google.com/p/cx-extractor
 	 */
 	
 	public static final int minStart = 5;
@@ -621,7 +622,7 @@ public class Util {
 	 */
 	
 	public static double tokenGrade(String token) throws IOException, ParseException {
-		IndexReader reader = getIndexReader();
+		IndexReader reader = getIndexReader(null);
 		IndexSearcher searcher = new IndexSearcher(reader);
 		int numDocs = reader.numDocs();
 		Analyzer smartcn = new SmartChineseAnalyzer(luceneVersion);
@@ -651,8 +652,10 @@ public class Util {
 	 *  返回 IndexReader
 	 */
 	
-	public static IndexReader getIndexReader() throws IOException {
-		String[] strs = { chinapubIndexDir, blogIndexDir };
+	public static IndexReader getIndexReader(String[] args) throws IOException {
+		String[] strs = args;
+		if (args.equals(null)) 
+			strs = new String[]{ chinapubIndexDir, blogIndexDir };
 		int size = strs.length;
 		
 		File[] files = new File[size];
