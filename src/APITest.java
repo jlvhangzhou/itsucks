@@ -48,8 +48,6 @@ import org.apache.lucene.index.Terms;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import org.xml.sax.SAXException;
@@ -124,8 +122,8 @@ public class APITest {
 		Analyzer smartcn = new SmartChineseAnalyzer(Util.luceneVersion);
 		QueryParser parser = new MultiFieldQueryParser(Util.luceneVersion, Util.fields, smartcn);
 		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = parser.parse("mysql haohtml");
-		TopDocs hits = searcher.search(query, 10);
+		Query query = parser.parse("yufeng");
+		TopDocs hits = searcher.search(query, 1000);
 		System.out.println(hits.totalHits);
 		
 //		Term t = new Term("id", "1148516621552470229");
