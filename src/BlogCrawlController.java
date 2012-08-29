@@ -53,7 +53,7 @@ public class BlogCrawlController {
 		JedisPool pool = new JedisPool("localhost");
 		Jedis jedis = pool.getResource();
 		if (jedis.sismember(Util.acceptdb, site) || jedis.sismember(Util.rejectdb, site)) return;
-		pool.returnBrokenResource(jedis);
+		pool.returnResource(jedis);
 		pool.destroy();
 		
 		int maxPagesToFetch = 1600;
@@ -128,7 +128,7 @@ public class BlogCrawlController {
 				String path = Util.getPath(x.url, site);
 				if (path == null) continue;
 				if (!result.containsColumn("cf".getBytes(), path.getBytes())) {
-					String value = "<title>" + x.parser.getTitle() + "</title>\n\n\n" + x.parser.getText(); 
+					String value = x.parser.getHtml(); 
 					put.add("cf".getBytes(), path.getBytes(), ts, value.getBytes());
 				}
 			}

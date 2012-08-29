@@ -36,7 +36,6 @@ import org.apache.hadoop.hbase.filter.TimestampsFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -49,6 +48,8 @@ import org.apache.lucene.index.Terms;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import org.xml.sax.SAXException;
@@ -141,9 +142,12 @@ public class APITest {
 			
 		}
 		
-//		File path = new File("/home/wiza/599.html");
-//		String html = new String( Files.readAllBytes(path.toPath()) );
-//		System.out.println(Util.getMainBody(html));
+		File path = new File("/home/wiza/193.html");
+		String html = new String( Files.readAllBytes(path.toPath()) );
+		String content = Util.getMainBody(html);
+		String abstr = Util.getAbstract(content);
+		System.out.println(content);
+		System.out.println(abstr);
 	}
 }
 

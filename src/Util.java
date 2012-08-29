@@ -86,17 +86,17 @@ public class Util {
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
-	 *  从parse后的网页纯文本提取正文内容
+	 *  从html提取正文内容
 	 */
 	
 	public static final int minStart = 5;
 	public static final int blockThickness = 3;
 	public static final int minChars = 90;
 	
-	public static String getMainBody(String text) {
-//		int bodyIndex = Math.max(html.toLowerCase().indexOf("<body"), 0);
-//		String text = html.substring(bodyIndex);
-//		text = fliterTag(text);
+	public static String getMainBody(String html) {
+		int bodyIndex = Math.max(html.toLowerCase().indexOf("<body"), 0);
+		String text = html.substring(bodyIndex);
+		text = fliterTag(text);
 		
 		String[] lines = text.split("\n");
 		int totalLines = lines.length;
@@ -165,7 +165,19 @@ public class Util {
 		text = removeEmptyLines(text);
 		text = text.replaceAll("\\s+", " ").trim();
 		int length = text.length();
-		return text.substring(0, Math.min(length, lengthOfAbstract));
+		double count = 0;
+		String result = "";
+		for (int i = 0; i < length; i++) {
+			char ch = text.charAt(i);
+			result += ch;
+			if (ch == ' ') count += 0.5;
+			else if (Character.isUpperCase(ch)) count += 0.8;
+			else if (Character.isLowerCase(ch)) count += 0.7;
+			else if (Character.isDigit(ch)) count += 0.7;
+			else count += 1;
+			if (count >= lengthOfAbstract) break;
+		}
+		return result += "...";
 	}
 	
 	/**
@@ -345,10 +357,35 @@ public class Util {
 	 *  对(不)规则html除去标签
 	 */
 	
+	public static String fliter(String html, String tag1, String tag2) {
+		String lowc = html.toLowerCase();
+		while (lowc.contains(tag1)) {
+			int begin = lowc.indexOf(tag1);
+			int end = lowc.indexOf(tag2) + tag2.length();
+			if (begin < 0 || end < 0) break;
+			lowc = lowc.substring(0, begin) + lowc.substring(end);
+			html = html.substring(0, begin) + html.substring(end);
+		}
+		return html;
+	}
+	
 	public static String fliterTag(String html) {
+		/*
 		String result = html.replaceAll("<script[^>]*>.*</script>", "");
 		result = result.replaceAll("<!--.*-->", "");
 		result = result.replaceAll("<[^>\n]*>", "");
+		return result;
+		*/
+		String text = html;
+		text = fliter(text, "<script", "</script>");
+		text = fliter(text, "<!--", "-->");
+		text = fliter(text, "<?", "?>");
+		text = fliter(text, "<%", "%>");
+		text = fliter(text, "<!", ">");
+		String[] lines = text.split("\n");
+		String result = lines[0] + "\n";
+		for (int i = 1; i < lines.length; i++)
+			result += lines[i].replaceAll("<[^>]*>", "") + "\n";
 		return result;
 	}
 	

@@ -35,7 +35,7 @@ public class ProbeCrawler extends WebCrawler {
 	public void visit(Page page) {
 		if (page.getParseData() instanceof HtmlParseData) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-			String text = Util.getMainBody(htmlParseData.getText());
+			String text = Util.getMainBody(htmlParseData.getHtml());
 			if (text == null) return;
 			if (ProbeCrawlController.totalFetchPages < ProbeCrawlController.maxPagesToFetch / 2) {
 				ProbeCrawlController.texts.add(text);
