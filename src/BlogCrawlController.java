@@ -46,7 +46,7 @@ public class BlogCrawlController {
 	
 	public static void main(String[] args) throws Exception {
 		
-//		String[] ars = { "blog.yufeng.info", "blog.yufeng.info" };
+//		args = new String[]{ "www.cppblog.com/vczh", "www.cppblog.com/vczh" };
 		String site = Util.URLCrawlFormat(args[0]);
 		String seed = Util.URLCrawlFormat(args[1]);
 		

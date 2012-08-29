@@ -70,13 +70,14 @@ public class Util {
 	 *  定义爬虫参数
 	 */
 
-	public static final int numberOfCrawlers = 8;
+	public static final int numberOfCrawlers = 4;
+	public static final int politenessDelay = 500;
 	public static final String MasterHost = "meepo-0";
 	
 	public static CrawlConfig getGlobalCrawlCongig(int maxPagesToFetch) {
 		CrawlConfig config = new CrawlConfig();
 		config.setCrawlStorageFolder(crawler4jDataDir);
-		config.setPolitenessDelay(125);
+		config.setPolitenessDelay(500);
 		config.setMaxDepthOfCrawling(-1);
 		config.setMaxPagesToFetch(maxPagesToFetch);
 		config.setResumableCrawling(false);
@@ -155,6 +156,31 @@ public class Util {
 	
 	/**
 	 *  @author Wu Hualiang <wizawu@gmail.com>
+	 *  去除连续的空白字符
+	 */
+	
+	public static boolean space(Character ch) {
+		return Character.isSpace(ch) || Character.isSpaceChar(ch);
+	}
+	
+	public static String removeSpaces(String str) {
+		String result = "";
+		int length = str.length();
+		for (int i = 0; i < length; i++) {
+			char ch = str.charAt(i);
+			if (space(ch)) {
+				result += " ";
+				while (i + 1 < length && space(str.charAt(i + 1)))
+					i++;
+			} else {
+				result += ch;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 *  @author Wu Hualiang <wizawu@gmail.com>
 	 *  从 getMainBody 得到的正文中提取摘要
 	 */
 	
@@ -162,8 +188,9 @@ public class Util {
 	
 	public static String getAbstract(String text) {
 		if (text == null) return null;
+		text = text.replaceAll("&nbsp;", " ");
 		text = removeEmptyLines(text);
-		text = text.replaceAll("\\s+", " ").trim();
+		text = removeSpaces(text).trim();
 		int length = text.length();
 		double count = 0;
 		String result = "";
@@ -362,9 +389,9 @@ public class Util {
 		while (lowc.contains(tag1)) {
 			int begin = lowc.indexOf(tag1);
 			int end = lowc.indexOf(tag2) + tag2.length();
-			if (begin < 0 || end < 0) break;
-			lowc = lowc.substring(0, begin) + lowc.substring(end);
-			html = html.substring(0, begin) + html.substring(end);
+			if (begin < 0 || end < 0 || begin > end) break;
+			lowc = lowc.substring(0, begin).concat(lowc.substring(end));
+			html = html.substring(0, begin).concat(html.substring(end));
 		}
 		return html;
 	}

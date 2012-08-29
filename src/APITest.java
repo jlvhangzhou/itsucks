@@ -124,7 +124,7 @@ public class APITest {
 		Analyzer smartcn = new SmartChineseAnalyzer(Util.luceneVersion);
 		QueryParser parser = new MultiFieldQueryParser(Util.luceneVersion, Util.fields, smartcn);
 		parser.setDefaultOperator(QueryParser.AND_OPERATOR);
-		Query query = parser.parse("java");
+		Query query = parser.parse("mysql haohtml");
 		TopDocs hits = searcher.search(query, 10);
 		System.out.println(hits.totalHits);
 		
@@ -142,12 +142,12 @@ public class APITest {
 			
 		}
 		
-		File path = new File("/home/wiza/193.html");
-		String html = new String( Files.readAllBytes(path.toPath()) );
-		String content = Util.getMainBody(html);
-		String abstr = Util.getAbstract(content);
-		System.out.println(content);
-		System.out.println(abstr);
+//		File path = new File("/home/wiza/193.html");
+//		String html = new String( Files.readAllBytes(path.toPath()) );
+//		String content = Util.getMainBody(html);
+//		String abstr = Util.getAbstract(content);
+//		System.out.println(content);
+//		System.out.println(abstr);
 	}
 }
 
