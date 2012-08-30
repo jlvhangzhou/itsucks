@@ -1,0 +1,292 @@
+
+/* IMPORTS ------------------------------------------------------------*/
+
+@import url('reset.css');
+
+@import url('styled-elements.css');
+
+/* HACKS ------------------------------------------------------------*/
+
+.clear{
+	clear:both;
+	height:1px;
+}
+
+.inv{ display:none; }
+
+.alignleft{
+	float: left;
+	margin: 5px 10px 5px 0px;
+}
+
+/* GENERAL ------------------------------------------------------------*/
+
+
+body {
+	line-height: 1;
+	color: #51565b;
+	background: #ffffff;
+	font-family: 'Tikal Sans Medium', '微软雅黑', 'Tahoma';
+	font-size:  100%;
+}
+
+.wrapper{
+	width: 90%;
+	margin: 0px auto;
+	position: relative;
+}
+
+#header{
+	height: 80px;
+	position: relative;
+	z-index: 10;
+	background: #f1f1f1 url(../img/tabs-divider.png) repeat-x bottom center;
+}
+
+
+#main{
+	min-height: 562px;
+	width: 100%;
+}
+
+#content{
+	overflow: hidden;
+	font-size: 14px;
+	line-height: 1.5em;
+}
+
+#logo{
+	position: absolute;
+	top: 12px;
+	left: 0px;
+	-webkit-border-radius: 3px;
+}
+
+#content a{
+	color: #37b2d1;
+}
+
+#content p{
+	margin-bottom: 20px;
+}
+
+#content .line-divider{
+	clear: both;
+	border-bottom: 1px solid #d7d7d7;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+}
+
+
+/* HEADERS --------------------------------------------------------*/
+
+h1,h2,h3,h4{ 
+	line-height: 1.4em;
+	font-family: 'Tikal Sans Medium', '微软雅黑', 'Tahoma';
+	font-weight: lighter;
+}
+
+h5,h6{
+	font-family: 'Tikal Sans Medium', '微软雅黑', 'Tahoma';
+	font-weight: lighter;
+}
+
+h1{ font-size: 30px; }
+
+h2{ font-size: 28px; }
+
+h3{ font-size: 26px; }
+
+h4{ font-size: 18px; }
+
+h5{ font-size: 14px; }
+
+h6{ font-size: 12px; }
+
+/* SEARCH --------------------------------------------------------*/
+
+.top-search{
+	position: absolute;
+	top:30px;
+	left: 150px;
+}
+
+#searchform #s{
+	color: black;
+	font-size: 16px;
+	font-family: 'Tikal Sans Medium', '微软雅黑', 'Tahoma';
+	width: 540px;
+	height: 24px;
+	margin: 0px 0px 5px 0px;
+	padding: 2px 35px 2px 8px;
+	border: 1px solid #6060b0;
+	background: #f0efeb;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 3px;
+}
+
+#searchform #searchsubmit{
+	position: absolute; 
+	top: 2px;
+	right: 0px;
+	width: 25px;
+	height: 25px;
+	border: 0px;
+	background: url(../img/search-submit.png) no-repeat  transparent -3px 2px;
+}
+
+
+/* PAGES --------------------------------------------------------*/
+
+#page-content{
+	float: left;
+	width: 906px;
+	margin-left: 30px;
+	line-height: 1.5em;
+}
+
+
+/* BLOG --------------------------------------------------------*/
+
+#posts {
+	position: relative;
+	left: 0px;
+	width: 100%;
+}
+
+#posts li{
+	overflow: hidden;
+	display: block;
+	float: left;
+	width: 45%;
+	height: 102px;
+	margin: 8px 0px 0px 40px;
+}
+
+#posts h4 a{
+	overflow: hidden;
+	display: block;
+	margin-bottom: 0px;
+	width: 100%;
+	text-decoration: none;
+	color: #4444ff;
+}
+
+#posts h5{
+	overflow: hidden;
+	display: block;
+	margin-top: -2px;
+	width: 100%;
+	text-decoration: none;
+	color: #51565b;
+}
+
+#posts h6{
+	overflow: hidden;
+	display: block;
+	margin-top: -6px;
+	width: 100%;
+	text-decoration: none;
+	color: #aaaaaa;
+}
+
+#posts .the-excerpt{
+	padding-bottom: 40px;
+	background: url(../img/post-divider.png) center bottom no-repeat;
+}
+
+
+/* PAGER ------------------------------------------------------------*/
+
+.pager{
+	position: absolute;
+	right: 100px;
+	top: 10px;
+	padding-top: 0px;
+	overflow: hidden;
+	display: block;
+	height: 30px;
+	margin-top: 20px;
+	margin-left: 30px;
+	margin-bottom: 20px;
+	font-size: 10px;
+}
+
+.pager li{
+	display: block;
+	width: 26px;
+	height: 26px;
+	margin-right: 8px;
+	float: left;
+}
+
+#header .pager li a{
+	display: block;
+	width: 100%;
+	height: 100%;
+	line-height: 26px;
+	text-align: center;
+	text-decoration: none;
+	color: #606060;
+	border-radius: 33px;
+	-moz-border-radius: 33px;
+	-webkit-border-radius: 33px;
+	background: #d1d1d1;
+	background: -webkit-gradient(linear, left top, left bottom, from(#d1d1d1), to(#f1f1f1)); 
+	background: -moz-linear-gradient(top,  #d1d1d1,  #f1f1f1);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d1d1d1', endColorstr='#f1f1f1', GradientType=0);
+	
+	border-top: 1px solid #bcbcbc;
+}
+
+#header .pager li:hover a,
+#header .pager li.active a{
+	color: #fff;
+	background: #515558;
+	background: -webkit-gradient(linear, left top, left bottom, from(#515558), to(#131313)); 
+	background: -moz-linear-gradient(top,  #515558,  #131313);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#515558', endColorstr='#131313', GradientType=0);
+	
+	-webkit-box-shadow: 0px 1px 2px rgba(0,0,0,.5); 
+	-moz-box-shadow: 0px 1px 2px rgba(0,0,0,.5); 
+	box-shadow: 0px 1px 2px rgba(0,0,0,.5); 
+	
+	border-top: none;
+}
+
+
+/* FOOTER BOTTOM --------------------------------------------------------*/
+
+#bottom{
+	position: relative;
+	width: 100%;
+	height: 40px;
+	font-size: 13px;
+	line-height: 1.5em;
+	line-height: 40px;
+	color: #868686;
+	/*background: #222426 url(../img/bottom-shadow.png) repeat-x;*/
+}
+
+#bottom #bottom-text{
+	width: 600px;
+	font-size: 14px;
+	overflow: hidden;
+	margin-left: 300px;	
+}
+
+#bottom a{
+	color: #AFEAF9;
+	text-decoration: none;
+}
+
+#bottom #to-top{
+	position: absolute;
+	right: 30px;
+	top: -22px;
+	width: 33px;
+	height: 33px;
+	background: url(../img/to-top.png) no-repeat;
+	cursor: pointer;
+}

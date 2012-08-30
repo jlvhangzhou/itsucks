@@ -1,0 +1,164 @@
+@(arg: String)
+<!DOCTYPE  html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>IT sucks!</title>
+		<!-- CSS -->
+		<link rel="stylesheet" href="@routes.Assets.at("css/style.css")" type="text/css" media="screen" />
+		<!--[if IE 8]>
+			<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("css/ie8-hacks.css")" />
+		<![endif]-->
+		<!-- ENDS CSS -->
+	</head>
+	
+	<body>
+		<!-- HEADER -->
+		<div id="header">
+			<!-- wrapper-header -->
+			<div class="wrapper">
+				<a href="index.html"><img id="logo" src="@routes.Assets.at("img/logo.png")" alt="Nova" /></a>
+				
+				<!-- search -->
+				<div class="top-search">
+					<form  method="get" id="searchform" action="">
+						<div>
+							<input type="text" value="<!-- key -->" name="s" id="s" onfocus="defaultInput(this)" onblur="clearInput(this)" />
+							<input type="submit" id="searchsubmit" value="" />
+						</div>
+					</form>
+				</div>
+				<!-- ENDS search -->
+				
+				<!-- pagination -->	
+				</div>
+					<div class="clear"></div>
+					<ul class='pager'>
+						<li class='first-page'><a href="/">&laquo;</a></li>
+						<li><a href="/" >&lsaquo;</a></li>
+						<!--
+						<li><a href='#' >2</a></li>
+						<li><a href='#' >3</a></li>
+						<li class='active'><a href='#'>4</a></li>
+						<li><a href="/" >5</a></li>
+						<li><a href="/" >6</a></li>
+						 -->
+						<li><a href='#' >&rsaquo;</a></li>
+						<li class='last-page'><a href='#'>&raquo;</a></li>
+					</ul>
+				</div>
+				<!-- ENDS pagination -->						
+			</div>
+			<!-- ENDS wrapper-header -->
+		</div>
+		<!-- ENDS HEADER -->
+				
+		<!-- MAIN -->
+		<div id="main">
+			<!-- wrapper-main -->
+			<div class="wrapper">
+				<!-- content -->
+				<div id="content">
+					<!-- Posts -->
+					<div id="posts">
+					<ul>
+					<li>
+						<h4><a href="http://hadoop.apache.org/">Welcome to Apache™ Hadoop™!</a></h4>
+						<h6>hadoop.apache.org/</h6>
+						<h5>The Apache Hadoop software library is a framework that allows for the distributed
+							processing of large data sets across clusters of computers using a simple 
+							programming model. It is designed to scale up from single servers to...
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://hbase.apache.org/">HBase - HBase Home</a></h4>
+						<h6>hbase.apache.org/</h6>
+						<h5>HBase is the Hadoop database. Think of it as a distributed, scalable, big data 
+							store.
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://hadoop.apache.org/mapreduce/">Welcome to Hadoop™ MapReduce!</a></h4>
+						<h6>hadoop.apache.org/mapreduce/</h6>
+						<h5>Hadoop MapReduce is a programming model and software framework for writing 
+							applications that rapidly process vast amounts of data in parallel on large 
+							clusters of compute nodes.
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://redis.io/">Redis</a></h4>
+						<h6>redis.io/</h6>
+						<h5>Redis is an open source, advanced key-value store. It is often referred to as a 
+							data structure server since keys can contain strings, hashes, lists, sets and
+							sorted sets.
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://lucene.apache.org/core/">Apache Lucene - Apache Lucene Core</a></h4>
+						<h6>lucene.apache.org/core/</h6>
+						<h5>Apache Lucene(TM) is a high-performance, full-featured text search engine library
+							written entirely in Java. It is a technology suitable for nearly any application 
+							that requires full-text search, especially cross-platform.
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://www.playframework.org/">Home — Playframework</a></h4>
+						<h6>www.playframework.org/</h6>
+						<h5>Play is based on a lightweight, stateless, web-friendly architecture and features 
+							predictable and minimal resource consumption (CPU, memory, threads) for 
+							highly-scalable applications - thanks to its reactive model, based on Iteratee IO.
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://ganglia.sourceforge.net/">Ganglia Monitoring System</a></h4>
+						<h6>ganglia.sourceforge.net/</h6>
+						<h5>Ganglia is a scalable distributed monitoring system for high-performance computing
+						 	systems such as clusters and Grids. It is based on a hierarchical design targeted
+						 	at federations of clusters. It leverages widely used technologies such as XML...
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://code.google.com/p/crawler4j/">crawler4j - Open Source Web Crawler for Java</a></h4>
+						<h6>code.google.com/p/crawler4j/</h6>
+						<h5>Crawler4j is an open source Java crawler which provides a simple interface for
+							crawling the Web. You can setup a multi-threaded web crawler in 5 minutes!
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://zookeeper.apache.org/">Apache ZooKeeper - Home</a></h4>
+						<h6>zookeeper.apache.org/</h6>
+						<h5>ZooKeeper is a centralized service for maintaining configuration information, 
+							naming, providing distributed synchronization, and providing group services. All 
+							of these kinds of services are used in some form or another by distributed 
+							applications...
+						</h5>
+					</li>			
+					<li>
+						<h4><a href="http://code.google.com/p/cx-extractor/">基于行块分布函数的通用网页正文抽取</a></h4>
+						<h6>code.google.com/p/cx-extractor/</h6>
+						<h5>作者提出了《基于行块分布函数的通用网页正文抽取算法》，首次将网页正文抽取问题转化为求页面的行块
+							分布函数，这种方法不用建立Dom树，不被病态HTML所累（事实上与HTML标签完全无关）。通过在线性时间
+							内建立的行块分布函数图，直接准确定位...
+						</h5>
+					</li>
+					</ul>
+					</div>
+					<!-- ENDS Posts -->	
+				</div>
+				<!-- ENDS content -->
+			</div>
+			<!-- ENDS wrapper-main -->
+		</div>
+		<!-- ENDS MAIN -->
+			
+		<!-- Bottom -->
+		<div id="bottom">
+			<!-- wrapper-bottom -->
+			<div class="wrapper">
+				<div id="bottom-text" align="center">© 2012 wiza. All rights reserved.</div>
+			</div>
+			<!-- ENDS wrapper-bottom -->
+		</div>
+		<!-- ENDS Bottom -->
+	</body>
+</html>
