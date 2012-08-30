@@ -103,8 +103,8 @@ public class Application extends Controller {
 	 *  省略显示 title 和 site
 	 */
 	
-	public static final int lengthOfTitle = 25;
-	public static final int lengthOfSite = 35;
+	public static final int lengthOfTitle = 32;
+	public static final int lengthOfSite = 40;
 	
 	public static String getPrefix(String text, int k) {
 		text = text.replaceAll("[\r\n]", "");

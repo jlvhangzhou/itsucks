@@ -13,6 +13,12 @@
 	</head>
 	
 	<body>
+		<script>
+			function jump() {
+				if(event.keyCode==13)location.href='/' + document.getElementById('s').value + '/1';
+			}
+		</script>	
+	
 		<!-- HEADER -->
 		<div id="header">
 			<!-- wrapper-header -->
@@ -21,14 +27,13 @@
 				
 				<!-- search -->
 				<div class="top-search">
-					<form  method="get" id="searchform" action="">
-						<div>
+					<div   id="searchform" >
+						
 							<!-- textbox -->
-							<input type="text" value="@key" name="s" id="s" onfocus="defaultInput(this)" onblur="clearInput(this)" />
+							<input type="text" value="@key" name="s" id="s" onkeydown="javascript:jump()" onblur="clearInput(this)"  />
 							<!-- end textbox -->
-							<input type="submit" id="searchsubmit" value="" />
-						</div>
-					</form>
+							
+					</div>
 				</div>
 				<!-- ENDS search -->
 				
