@@ -89,7 +89,7 @@ public class LuceneIndexWriter {
 					String title = Util.getTitle(value);
 					String content = Util.getMainBody(value);
 					if (content == null) continue;
-					String abstr = Util.getAbstract(content);
+					String abstr = Util.getAbstract(content, Util.lengthOfAbstract);
 					String id = Util.getLuceneID(site, title);
 					
 					Document doc = new Document();

@@ -105,7 +105,7 @@ public class Util {
 		int[] lineLength = new int[totalLines];
 		for (int i = 0; i < totalLines; i++) {
 			lines[i] = lines[i].replaceAll("\\s+", " ").trim();
-			lineLength[i] = lines[i].length();
+			lineLength[i] = lines[i].replaceAll("\\s+", "").length();
 		}
 
 		if (totalLines <= blockThickness) return null;
@@ -122,27 +122,22 @@ public class Util {
 		if (minStart + blockThickness >= totalLines) return null;
 		
 		int start = minStart, end = totalLines;
-		int maxBlockLength = 0, count = 0;
 		
-		for (int i = start; i < blockLength.length - 1; i++) {
+		for (int i = start, j; i < blockLength.length - 1; i++) {
+			if (lineLength[i] == 0) continue;
 			if (blockLength[i] < minChars) continue;
 			if (blockLength[i + 1] == 0) continue;
 			
-			int sum = 0;
-			for (int j = i; j < blockLength.length; j++) {
-				if (blockLength[j] == 0) {
-					if (sum > maxBlockLength * 3) { 
-						start = i;
-						end = j;
-						maxBlockLength = sum;
-						count++;
-					}
-					break;
-				} else {
-					sum += lineLength[i];
-				}
+			int nonEmptyLines = 0;
+			for (j = i; j < blockLength.length; j++) {
+				if (blockLength[j] == 0) break;
+				if (lineLength[j] != 0) nonEmptyLines++;
 			}
-			if (count == 3) break;
+			if (nonEmptyLines >= blockThickness) {
+				start = i;
+				end = j;
+				break;
+			}
 		}
 
 		String result = lines[start] + "\n";
@@ -186,8 +181,10 @@ public class Util {
 	 */
 	
 	public static final int lengthOfAbstract = 115;
+	public static final int lengthOfTitle = 25;
+	public static final int lengthOfSite = 35;
 	
-	public static String getAbstract(String text) {
+	public static String getAbstract(String text, int k) {
 		if (text == null) return null;
 		text = text.replaceAll("&nbsp;", " ");
 		text = removeEmptyLines(text);
@@ -203,7 +200,7 @@ public class Util {
 			else if (Character.isLowerCase(ch)) count += 0.7;
 			else if (Character.isDigit(ch)) count += 0.7;
 			else count += 1;
-			if (count >= lengthOfAbstract) break;
+			if (count >= k) break;
 		}
 		return result += "...";
 	}
@@ -218,7 +215,7 @@ public class Util {
 		int begin = html.indexOf("<title>") + "<title>".length();
 		int end = html.indexOf("</title>");
 		String title = orig_html.substring(begin, end).trim();
-		return title;
+		return removeSpaces(title);
 	}
 	
 	/**
@@ -387,12 +384,14 @@ public class Util {
 	
 	public static String fliter(String html, String tag1, String tag2) {
 		String lowc = html.toLowerCase();
+		int index = 0;
 		while (lowc.contains(tag1)) {
-			int begin = lowc.indexOf(tag1);
-			int end = lowc.indexOf(tag2) + tag2.length();
+			int begin = lowc.indexOf(tag1, index);
+			int end = lowc.indexOf(tag2, begin) + tag2.length();
 			if (begin < 0 || end < 0 || begin > end) break;
 			lowc = lowc.substring(0, begin).concat(lowc.substring(end));
 			html = html.substring(0, begin).concat(html.substring(end));
+			index = end;
 		}
 		return html;
 	}
@@ -406,15 +405,17 @@ public class Util {
 		*/
 		String text = html;
 		text = fliter(text, "<script", "</script>");
+		text = fliter(text, "<style", "</style>");
 		text = fliter(text, "<!--", "-->");
 		text = fliter(text, "<?", "?>");
 		text = fliter(text, "<%", "%>");
 		text = fliter(text, "<!", ">");
 		String[] lines = text.split("\n");
-		String result = lines[0] + "\n";
+		text = lines[0] + "\n";
 		for (int i = 1; i < lines.length; i++)
-			result += lines[i].replaceAll("<[^>]*>", "") + "\n";
-		return result;
+			text += lines[i].replaceAll("<[^>]*>", "") + "\n";
+		text = text.replaceAll("<[^>]*>", "");
+		return text;
 	}
 	
 	/**
@@ -622,7 +623,7 @@ public class Util {
 	 */
 	
 	public static double tokenGrade(String token) throws IOException, ParseException {
-		IndexReader reader = getIndexReader(null);
+		IndexReader reader = getIndexReader();
 		IndexSearcher searcher = new IndexSearcher(reader);
 		int numDocs = reader.numDocs();
 		Analyzer smartcn = new SmartChineseAnalyzer(luceneVersion);
@@ -652,10 +653,8 @@ public class Util {
 	 *  返回 IndexReader
 	 */
 	
-	public static IndexReader getIndexReader(String[] args) throws IOException {
-		String[] strs = args;
-		if (args.equals(null)) 
-			strs = new String[]{ chinapubIndexDir, blogIndexDir };
+	public static IndexReader getIndexReader() throws IOException {
+		String[] strs = { chinapubIndexDir, blogIndexDir };
 		int size = strs.length;
 		
 		File[] files = new File[size];

@@ -10,4 +10,4 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 # itsucks
 
-GET		/*key/:page					controllers.Application.test(key: String, page: Long)
+GET		/*key/:page					controllers.Application.search(key: String, page: Long)
