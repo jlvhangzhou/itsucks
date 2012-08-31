@@ -181,16 +181,16 @@ public class Application extends Controller {
 			for (int i = 0; i < 10; i++) {
 				String num = Integer.valueOf(i + 1).toString(); 
 				regex = "<!-- result " + num + " -->.*<!-- end result " + num + " -->";
+				int index = html.indexOf("<!-- result ");
+				html = html.replaceAll(regex, "");
 				if (i < result.size()) {
 					replacement = "<li><h4><a href=\"" + 
 							result.get(i).fields[0] + "\">" +
 							result.get(i).fields[1] + "</a></h4><h6>" +
 							result.get(i).fields[2] + "</h6><h5>" +
 							result.get(i).fields[3] + "</h5></li>";
-				} else {
-					replacement = "";
-				}
-				html = html.replaceAll(regex, replacement);
+					html = html.substring(0, index) + replacement + html.substring(index);
+				} 
 			}
 		}
 		return ok(html).as("text/html");

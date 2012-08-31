@@ -384,25 +384,17 @@ public class Util {
 	
 	public static String fliter(String html, String tag1, String tag2) {
 		String lowc = html.toLowerCase();
-		int index = 0;
-		while (lowc.contains(tag1)) {
-			int begin = lowc.indexOf(tag1, index);
-			int end = lowc.indexOf(tag2, begin) + tag2.length();
-			if (begin < 0 || end < 0 || begin > end) break;
+		while (lowc.contains(tag1) && lowc.contains(tag2)) {
+			int begin = lowc.indexOf(tag1);
+			int end = lowc.indexOf(tag2) + tag2.length();
+			if (begin > end) break;
 			lowc = lowc.substring(0, begin).concat(lowc.substring(end));
 			html = html.substring(0, begin).concat(html.substring(end));
-			index = end;
 		}
 		return html;
 	}
 	
 	public static String fliterTag(String html) {
-		/*
-		String result = html.replaceAll("<script[^>]*>.*</script>", "");
-		result = result.replaceAll("<!--.*-->", "");
-		result = result.replaceAll("<[^>\n]*>", "");
-		return result;
-		*/
 		String text = html;
 		text = fliter(text, "<script", "</script>");
 		text = fliter(text, "<style", "</style>");
@@ -410,11 +402,8 @@ public class Util {
 		text = fliter(text, "<?", "?>");
 		text = fliter(text, "<%", "%>");
 		text = fliter(text, "<!", ">");
-		String[] lines = text.split("\n");
-		text = lines[0] + "\n";
-		for (int i = 1; i < lines.length; i++)
-			text += lines[i].replaceAll("<[^>]*>", "") + "\n";
 		text = text.replaceAll("<[^>]*>", "");
+
 		return text;
 	}
 	
