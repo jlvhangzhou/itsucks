@@ -155,7 +155,7 @@ public class Application extends Controller {
 		
 		if (SearchResult.total == 0) {
 			regex = "<!-- result [^>]* -->.*<!-- end result [^>]* -->";
-			replacement = "";
+			replacement = "<li><h4><a href=\"/\">Screw You</a></h4></li>";
 			html = html.replaceAll(regex, replacement);
 		} else {
 			Integer totalPages = (SearchResult.total - 1) / 10 + 1;
