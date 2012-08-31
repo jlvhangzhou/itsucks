@@ -37,10 +37,14 @@ public class LuceneIndexWriter {
 
 	public static void main(String[] args) throws IOException, ParseException, InterruptedException {
 		boolean init = false;
+		boolean resv = false;
 		if (args.length == 1) {
 			if (args[0].equals("init")) {
 				init = true;
 				System.out.println("init: " + Util.blogIndexDir);
+			} else if (args[0].equals("resv")) {
+				resv = true;
+				System.out.println("reserve: " + Util.tsdb);
 			}
 		}
 		
@@ -61,6 +65,7 @@ public class LuceneIndexWriter {
 		
 		JedisPool pool = new JedisPool(Util.MasterHost);
 		Jedis jedis = pool.getResource();
+		if (init) jedis.sadd(Util.tsdb, "0");
 		
 		HBaseConfiguration hbaseConf = new HBaseConfiguration();
 		HTable table = new HTable(hbaseConf, Util.blogHT);
@@ -111,6 +116,8 @@ public class LuceneIndexWriter {
 				}
 				writer.commit();
 			}
+			
+			if (resv) break;
 			
 			for (Long i: tslist) {
 				jedis.srem(Util.tsdb, i.toString());

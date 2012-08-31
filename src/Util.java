@@ -70,8 +70,8 @@ public class Util {
 	 *  定义爬虫参数
 	 */
 
-	public static final int numberOfCrawlers = 4;
-	public static final int politenessDelay = 500;
+	public static final int numberOfCrawlers = 8;
+	public static final int politenessDelay = 125;
 	public static final String MasterHost = "meepo-0";
 	
 	public static CrawlConfig getGlobalCrawlCongig(int maxPagesToFetch) {
